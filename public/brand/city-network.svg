@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="title description">
+  <title id="title">Red editorial de DELIVER ASSETS</title>
+  <desc id="description">Una ciudad abstracta conecta Customer, Business, Rider y Control mediante una misma ruta.</desc>
+  <defs>
+    <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" fill="#1551D8" opacity=".28"/></pattern>
+    <pattern id="paper" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 3h12M0 9h12" stroke="#D8CCAF" stroke-width=".5" opacity=".34"/></pattern>
+  </defs>
+  <rect width="960" height="720" rx="42" fill="#FFF9E9"/>
+  <rect width="960" height="720" rx="42" fill="url(#paper)"/>
+  <path d="M62 552H898M132 84V642M392 60V660M676 60V660" stroke="#F4E9C6" stroke-width="48"/>
+  <g fill="#1551D8" opacity=".9"><path d="M90 166h142v162H90z"/><path d="M264 116h94v212h-94z"/><path d="M722 122h148v206H722z"/><path d="M612 182h82v146h-82z"/></g>
+  <g fill="url(#dots)"><path d="M72 372h212v144H72z"/><path d="M690 370h198v146H690z"/></g>
+  <path d="M116 548C238 466 296 522 398 418S574 350 676 424 790 432 858 332" fill="none" stroke="#FF3328" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#FAF3DF" stroke="#FF3328" stroke-width="8"><circle cx="116" cy="548" r="18"/><circle cx="398" cy="418" r="18"/><circle cx="676" cy="424" r="18"/><circle cx="858" cy="332" r="18"/></g>
+  <g font-family="Inter,Arial,sans-serif" font-weight="800" font-size="24" fill="#111111">
+    <g transform="translate(72 574)"><rect width="188" height="82" rx="14" fill="#FAF3DF" stroke="#D8CCAF"/><text x="20" y="34">CUSTOMER</text><text x="20" y="61" font-size="14" fill="#6F6F69">SOLICITA</text></g>
+    <g transform="translate(306 310)"><rect width="188" height="82" rx="14" fill="#FFC62F"/><text x="20" y="34">BUSINESS</text><text x="20" y="61" font-size="14">PREPARA</text></g>
+    <g transform="translate(574 468)"><rect width="164" height="82" rx="14" fill="#FF3328"/><text x="20" y="34" fill="#FFFFFF">RIDER</text><text x="20" y="61" font-size="14" fill="#FFFFFF">MUEVE</text></g>
+    <g transform="translate(742 222)"><rect width="168" height="82" rx="14" fill="#111111"/><text x="20" y="34" fill="#FFFFFF">CONTROL</text><text x="20" y="61" font-size="14" fill="#FFC62F">SUPERVISA</text></g>
+  </g>
+  <g transform="translate(390 82)"><rect width="180" height="86" rx="22" fill="#FAF3DF" stroke="#1551D8" stroke-width="4"/><text x="90" y="40" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="22" fill="#1551D8">DELIVER ASSETS</text><text x="90" y="64" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12" fill="#6F6F69">UNA OPERACIÓN CONECTADA</text></g>
+</svg>

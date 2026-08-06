@@ -1,6 +1,6 @@
 import {
   ApplicationCard,
-  NetworkScene,
+  EditorialNetwork,
   PageHero,
   ProductVisual,
   SectionHeading,
@@ -48,7 +48,7 @@ export function HomePage() {
           </div>
           <p className="hero__status">Las aplicaciones se publicarán únicamente cuando existan versiones verificadas y canales oficiales.</p>
         </div>
-        <NetworkScene />
+        <EditorialNetwork />
       </section>
 
       <section className="mission-band">
