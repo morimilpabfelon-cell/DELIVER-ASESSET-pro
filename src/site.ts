@@ -74,12 +74,6 @@ export function resolveRoute(pathname: string): CorporateRoute | null {
   return routes.find((route) => route.path === normalizedPath) ?? null;
 }
 
-export function routeById(id: string): CorporateRoute {
-  const route = routes.find((candidate) => candidate.id === id);
-  if (!route) throw new Error(`Ruta corporativa no definida: ${id}`);
-  return route;
-}
-
 export function appRoute(id: AppId): string {
   return siteHref(`/apps/${id}/`);
 }
