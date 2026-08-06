@@ -240,6 +240,7 @@ try {
 
   await evaluate(client, "document.querySelector('.mobile-nav-toggle').click()");
   await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'true'");
+  await waitFor(client, "document.activeElement?.textContent?.trim() === 'Empresa'");
   report.mobileOpen = await evaluate(client, `(() => ({
     navDisplay: getComputedStyle(document.querySelector('#site-navigation')).display,
     activeText: document.activeElement?.textContent?.trim(),
