@@ -21,9 +21,13 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: chore/engineering-quality-baseline
-      - name: Capture starting revision
+      - name: Capture starting revision and migration files
         id: start
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          mkdir -p /tmp/pr11-migration/.github/workflows /tmp/pr11-migration/scripts
+          cp .github/workflows/one-time-pr11.yml /tmp/pr11-migration/.github/workflows/
+          cp scripts/apply-pr11.mjs scripts/fix-pr11-generator.mjs /tmp/pr11-migration/scripts/
       - name: Setup Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
@@ -49,21 +53,25 @@ jobs:
           npm run quality
           npm run test:mutation
           npm run security:audit
-      - name: Verify final tree
+      - name: Verify final product tree
         run: |
           test ! -e scripts/apply-pr11.mjs
           test ! -e scripts/fix-pr11-generator.mjs
           test ! -e .github/workflows/one-time-pr11.yml
           test -f package-lock.json
           ! git grep -n "npm install" -- .github/workflows/ci.yml .github/workflows/pages.yml
-      - name: Commit final baseline
+      - name: Restore migration files for connector cleanup
+        run: |
+          mkdir -p .github/workflows scripts
+          cp /tmp/pr11-migration/.github/workflows/one-time-pr11.yml .github/workflows/
+          cp /tmp/pr11-migration/scripts/apply-pr11.mjs /tmp/pr11-migration/scripts/fix-pr11-generator.mjs scripts/
+      - name: Commit permanent baseline
         env:
           START_SHA: ${{ steps.start.outputs.sha }}
         run: |
-          git fetch origin chore/engineering-quality-baseline
-          test "$(git rev-parse origin/chore/engineering-quality-baseline)" = "$START_SHA"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Chore: baseline de calidad y despliegue verificable"
-          git push origin HEAD:chore/engineering-quality-baseline
+          git push --force-with-lease=refs/heads/chore/engineering-quality-baseline:$START_SHA \
+            origin HEAD:refs/heads/chore/engineering-quality-baseline
