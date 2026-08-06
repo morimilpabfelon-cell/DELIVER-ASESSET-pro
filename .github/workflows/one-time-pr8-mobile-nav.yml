@@ -3,6 +3,8 @@ name: One-time PR8 mobile navigation migration
 on:
   push:
     branches: [feat/mobile-navigation-accessibility]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
