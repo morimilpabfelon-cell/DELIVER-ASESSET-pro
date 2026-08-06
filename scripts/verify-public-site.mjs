@@ -1,5 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises';
-import { extname, join } from 'node:path';
+import { extname } from 'node:path';
 
 const distDirectory = new URL('../dist/', import.meta.url);
 const textExtensions = new Set(['.html', '.css', '.js']);
@@ -27,21 +27,29 @@ const bundle = contents.join('\n');
 const forbiddenTerms = [
   'DA-24736',
   'S/ 18.90',
-  'Crear envío',
   'Prototipo público',
   'Este repositorio',
   'backend central todavía no implementado',
   'Vista conceptual · sin funciones operativas',
+  'launch-notice',
+  'app-orbit',
+  'Una red. Cuatro aplicaciones.',
 ];
 
 const requiredTerms = [
   'Mover la ciudad.',
   'Una red visible.',
-  'Próximamente',
+  'UNA OPERACIÓN · CUATRO RESPONSABILIDADES',
+  'No es solo pedir comida.',
+  'La ciudad no se mueve de una sola manera.',
+  'Diseñadas para verse distintas y trabajar juntas.',
   'DELIVER Customer',
   'DELIVER Business',
   'DELIVER Rider',
   'DELIVER Control',
+  'city-scene',
+  'journey-section',
+  'product-visual',
   'prefers-reduced-motion',
 ];
 
@@ -55,4 +63,4 @@ if (forbiddenFound.length > 0 || requiredMissing.length > 0) {
   throw new Error(messages.join('\n'));
 }
 
-console.log(`Contrato público verificado en ${files.length} archivos compilados.`);
+console.log(`Contrato de storytelling verificado en ${files.length} archivos compilados.`);
