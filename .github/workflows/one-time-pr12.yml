@@ -1,0 +1,65 @@
+name: One-time PR12 editorial motion
+
+on:
+  push:
+    branches: [feat/editorial-rendering-motion-system]
+
+concurrency:
+  group: one-time-pr12
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: feat/editorial-rendering-motion-system
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.23.1
+          cache: npm
+      - name: Repair migration template
+        run: node scripts/fix-pr12-generator.mjs
+      - name: Apply editorial rendering and motion system
+        run: |
+          node --check scripts/apply-pr12.mjs
+          node scripts/apply-pr12.mjs
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run full quality baseline
+        run: npm run quality
+      - name: Run mutation testing
+        run: npm run test:mutation
+      - name: Verify repository hygiene
+        run: |
+          test ! -e dist/assets/*.map
+          test -z "$(git ls-files node_modules)"
+          git diff --check
+      - name: Commit permanent product changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/components.tsx \
+            src/pages.tsx \
+            src/main.tsx \
+            src/styles.css \
+            src/motion.ts \
+            src/motion.test.ts \
+            vitest.config.ts \
+            stryker.config.mjs \
+            scripts/verify-public-site.mjs \
+            scripts/verify-mobile-navigation.mjs \
+            docs/MOTION-SYSTEM.md \
+            docs/TECH-DEBT.md
+          git diff --cached --check
+          git commit -m "Feat: render editorial y sistema de movimiento"
+          git push origin HEAD:feat/editorial-rendering-motion-system
