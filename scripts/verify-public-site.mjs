@@ -31,7 +31,7 @@ function inspectPng(buffer, label) {
 const files = await collectTextFiles(distDirectory);
 const contents = await Promise.all(files.map((file) => readFile(file, 'utf8')));
 const bundle = contents.join('\n');
-const forbiddenTerms = ['DA-24736', 'S/ 18.90', 'Prototipo público', 'Este repositorio', 'backend central todavía no implementado', 'Vista conceptual · sin funciones operativas', 'launch-notice', 'app-orbit', 'city-scene', 'Una red. Cuatro aplicaciones.', 'href="?app=', "href:'?app=", 'data:image/', 'base64,', 'brand-alignment.css', 'network-scene', 'network-node', 'route-packet'];
+const forbiddenTerms = ['DA-24736', 'S/ 18.90', 'Prototipo público', 'Este repositorio', 'backend central todavía no implementado', 'Vista conceptual · sin funciones operativas', 'launch-notice', 'app-orbit', 'city-scene', 'Una red. Cuatro aplicaciones.', 'href="?app=', "href:'?app=", 'data:image/', 'base64,', 'brand-alignment.css', 'network-scene', 'network-node', 'route-packet', 'deliver-assets-mark.png/', 'city-network.svg/'];
 const requiredTerms = ['Mover la ciudad.', 'Una red visible.', 'Infraestructura digital para coordinar comercio y movimiento.', 'Comunicaciones oficiales, cuando exista algo que comunicar.', 'La seguridad empieza por limitar correctamente el sistema.', 'DELIVER Customer', 'DELIVER Business', 'DELIVER Rider', 'DELIVER Control', 'editorial-network', 'brand/deliver-assets-mark.png', 'brand/city-network.svg', 'brand/og-brand.png', 'og:image', 'twitter:image', 'page-hero', 'product-visual', 'prefers-reduced-motion', 'sitemap.xml'];
 const errors = [];
 const forbiddenFound = forbiddenTerms.filter((term) => bundle.includes(term));
@@ -69,6 +69,11 @@ if (await pathExists(illustrationPath) && (await stat(illustrationPath)).size > 
 
 const sourceCss = await readFile(join(repositoryRoot, 'src', 'styles.css'), 'utf8');
 const sourceComponents = await readFile(join(repositoryRoot, 'src', 'components.tsx'), 'utf8');
+const sourceSite = await readFile(join(repositoryRoot, 'src', 'site.ts'), 'utf8');
+const sourcePages = await readFile(join(repositoryRoot, 'src', 'pages.tsx'), 'utf8');
+if (!sourceSite.includes('export function assetHref')) errors.push('Falta el resolvedor exclusivo para activos públicos');
+if (sourceComponents.includes("siteHref('/brand/")) errors.push('Un activo público todavía usa siteHref');
+if (sourceCss.includes('application-grid--light') || sourcePages.includes('application-grid--light')) errors.push('La variante de cuadrícula obsoleta todavía está presente');
 const navigationRequirements = [
   'id="site-navigation"',
   'aria-controls="site-navigation"',
@@ -97,4 +102,4 @@ for (const requiredDocument of ['ARCHITECTURE.md', 'CORPORATE-SITE.md', 'DESIGN-
   if (!await pathExists(join(repositoryRoot, 'docs', requiredDocument))) errors.push(`Documento de gobierno ausente: docs/${requiredDocument}`);
 }
 if (errors.length > 0) throw new Error(errors.join('\n'));
-console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS, tres activos de marca y navegación móvil accesible.`);
+console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS, activos públicos resolubles, contraste de aplicaciones y navegación móvil accesible.`);

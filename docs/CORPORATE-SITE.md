@@ -133,3 +133,12 @@ Al reemplazar una arquitectura:
 - `Escape`, el botón de cierre y el fondo exterior cierran el panel y devuelven el foco al botón.
 - La página Contacto utiliza `aria-current="page"` tanto en el menú como en el acceso de escritorio.
 - El fondo no se desplaza mientras el menú permanece abierto.
+
+
+## Activos públicos y contraste
+
+- Las rutas corporativas utilizan `siteHref()` y conservan slash final.
+- Los archivos de `public/` utilizan `assetHref()` y nunca reciben slash final después de la extensión.
+- El build debe abrir logo e ilustración en Chrome y comprobar dimensiones naturales mayores que cero.
+- Customer, Business, Rider y Control mantienen fondos blanco, amarillo, rojo y negro respectivamente.
+- Una variante de cuadrícula no puede anular el fondo de una aplicación sin actualizar también su contrato de contraste.

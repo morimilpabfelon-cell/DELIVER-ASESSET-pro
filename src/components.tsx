@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { appRoute, products, siteHref, type AppId, type CorporateRoute } from './site';
+import { appRoute, assetHref, products, siteHref, type AppId, type CorporateRoute } from './site';
 
 export function BrandMark() {
   return (
     <span className="brand-mark" aria-label="DELIVER ASSETS">
       <img
         className="brand-mark__symbol"
-        src={siteHref('/brand/deliver-assets-mark.png')}
+        src={assetHref('brand/deliver-assets-mark.png')}
         width="96"
         height="73"
         alt=""
@@ -239,7 +239,7 @@ export function EditorialNetwork() {
   return (
     <figure className="editorial-network hero-entrance hero-entrance--visual" aria-labelledby="editorial-network-caption">
       <div className="editorial-network__art">
-        <img src={siteHref('/brand/city-network.svg')} alt="" aria-hidden="true" />
+        <img src={assetHref('brand/city-network.svg')} alt="" aria-hidden="true" />
       </div>
       <figcaption className="editorial-network__legend" id="editorial-network-caption">
         {steps.map((step) => (

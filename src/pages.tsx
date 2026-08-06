@@ -217,7 +217,7 @@ export function AppsPage() {
       />
 
       <section className="section-block">
-        <div className="application-grid application-grid--light">
+        <div className="application-grid">
           {appIds.map((id) => <ApplicationCard id={id} key={id} />)}
         </div>
       </section>

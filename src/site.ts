@@ -45,6 +45,11 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 
+export function assetHref(path: string): string {
+  const normalizedPath = path.replace(/^\/+/, '');
+  return `${baseUrl}${normalizedPath}`;
+}
+
 export function siteHref(path: string): string {
   if (path.startsWith('#')) return path;
 
