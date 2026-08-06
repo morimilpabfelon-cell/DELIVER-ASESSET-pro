@@ -102,6 +102,27 @@ for (const route of routes) {
   }
 }
 
+const sourceCss = (
+  await Promise.all([
+    readFile(join(repositoryRoot, 'src', 'styles.css'), 'utf8'),
+    readFile(join(repositoryRoot, 'src', 'brand-alignment.css'), 'utf8'),
+  ])
+).join('\n');
+
+const declaredCssVariables = new Set(
+  [...sourceCss.matchAll(/--([a-z0-9-]+)\s*:/gi)].map((match) => match[1]),
+);
+const usedCssVariables = new Set(
+  [...sourceCss.matchAll(/var\(\s*--([a-z0-9-]+)/gi)].map((match) => match[1]),
+);
+const unusedCssVariables = [...declaredCssVariables]
+  .filter((variable) => !usedCssVariables.has(variable))
+  .sort();
+
+if (unusedCssVariables.length > 0) {
+  errors.push(`Variables CSS declaradas sin consumo: ${unusedCssVariables.map((variable) => `--${variable}`).join(', ')}`);
+}
+
 const obsoleteDocument = join(repositoryRoot, 'docs', 'PRODUCT-STORYTELLING.md');
 if (await pathExists(obsoleteDocument)) {
   errors.push('Documento de etapa obsoleto todavía presente: docs/PRODUCT-STORYTELLING.md');
@@ -117,4 +138,4 @@ if (errors.length > 0) {
   throw new Error(errors.join('\n'));
 }
 
-console.log(`Contrato corporativo verificado: ${routes.length} rutas y ${files.length} archivos compilados.`);
+console.log(`Contrato corporativo verificado: ${routes.length} rutas, ${files.length} archivos compilados y ${declaredCssVariables.size} variables CSS activas.`);
