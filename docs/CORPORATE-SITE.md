@@ -123,3 +123,13 @@ Al reemplazar una arquitectura:
 2. migrar las reglas duraderas;
 3. eliminar documentos de etapa y código sin uso;
 4. añadir una verificación que impida la regresión.
+
+
+## Navegación móvil y accesibilidad
+
+- En pantallas de hasta 820 px, la navegación se presenta como un panel controlado por un botón con `aria-controls` y `aria-expanded`.
+- El menú contiene Empresa, Servicios, Aplicaciones, Seguridad, Noticias y Contacto; ningún destino depende de desplazamiento horizontal.
+- Al abrir, el foco pasa al primer enlace. `Tab` y `Shift+Tab` permanecen dentro del control hasta cerrarlo.
+- `Escape`, el botón de cierre y el fondo exterior cierran el panel y devuelven el foco al botón.
+- La página Contacto utiliza `aria-current="page"` tanto en el menú como en el acceso de escritorio.
+- El fondo no se desplaza mientras el menú permanece abierto.

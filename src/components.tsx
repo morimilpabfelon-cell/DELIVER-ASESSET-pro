@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { appRoute, products, siteHref, type AppId, type CorporateRoute } from './site';
 
 export function BrandMark() {
@@ -64,24 +64,35 @@ export function PageHero({
   );
 }
 
-function HeaderNav({ currentRoute }: { currentRoute: CorporateRoute | null }) {
-  const links = [
-    { id: 'company', label: 'Empresa', path: '/company/' },
-    { id: 'services', label: 'Servicios', path: '/services/' },
-    { id: 'apps', label: 'Aplicaciones', path: '/apps/' },
-    { id: 'security', label: 'Seguridad', path: '/security/' },
-    { id: 'news', label: 'Noticias', path: '/news/' },
-  ];
+const headerLinks = [
+  { id: 'company', label: 'Empresa', path: '/company/' },
+  { id: 'services', label: 'Servicios', path: '/services/' },
+  { id: 'apps', label: 'Aplicaciones', path: '/apps/' },
+  { id: 'security', label: 'Seguridad', path: '/security/' },
+  { id: 'news', label: 'Noticias', path: '/news/' },
+  { id: 'contact', label: 'Contacto', path: '/contact/' },
+] as const;
 
+function HeaderNav({
+  currentRoute,
+  navRef,
+  onNavigate,
+}: {
+  currentRoute: CorporateRoute | null;
+  navRef: RefObject<HTMLElement | null>;
+  onNavigate: () => void;
+}) {
   const activeRoot = currentRoute?.id.startsWith('app-') ? 'apps' : currentRoute?.id;
 
   return (
-    <nav className="site-nav" aria-label="Navegación principal">
-      {links.map((link) => (
+    <nav id="site-navigation" ref={navRef} className="site-nav" aria-label="Navegación principal">
+      {headerLinks.map((link) => (
         <a
           key={link.id}
+          className={link.id === 'contact' ? 'site-nav__contact' : undefined}
           href={siteHref(link.path)}
           aria-current={activeRoot === link.id ? 'page' : undefined}
+          onClick={onNavigate}
         >
           {link.label}
         </a>
@@ -97,13 +108,101 @@ export function SiteLayout({
   currentRoute: CorporateRoute | null;
   children: ReactNode;
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const navRef = useRef<HTMLElement | null>(null);
+
+  const closeMobileMenu = (restoreFocus = false) => {
+    setMobileMenuOpen(false);
+    if (restoreFocus) window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const links = Array.from(navRef.current?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
+    const focusableElements = [menuButtonRef.current, ...links].filter(
+      (element): element is HTMLButtonElement | HTMLAnchorElement => element !== null,
+    );
+    const firstLink = links[0];
+    const focusFrame = window.requestAnimationFrame(() => firstLink?.focus());
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMobileMenu(true);
+        return;
+      }
+
+      if (event.key !== 'Tab' || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements.at(0);
+      const lastElement = focusableElements.at(-1);
+      if (!firstElement || !lastElement) return;
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.documentElement.classList.add('mobile-nav-open');
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.documentElement.classList.remove('mobile-nav-open');
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia('(min-width: 821px)');
+    const handleDesktopChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setMobileMenuOpen(false);
+    };
+
+    desktopQuery.addEventListener('change', handleDesktopChange);
+    return () => desktopQuery.removeEventListener('change', handleDesktopChange);
+  }, []);
+
   return (
     <div className="site-shell">
-      <header className="site-header">
+      <header className="site-header" data-mobile-menu-open={mobileMenuOpen ? 'true' : 'false'}>
         <a className="site-header__brand" href={siteHref('/')} aria-label="Ir al inicio"><BrandMark /></a>
-        <HeaderNav currentRoute={currentRoute} />
-        <a className="button button--primary button--header" href={siteHref('/contact/')}>Contacto</a>
+        <button
+          ref={menuButtonRef}
+          className="mobile-nav-toggle"
+          type="button"
+          aria-controls="site-navigation"
+          aria-expanded={mobileMenuOpen}
+          aria-label={mobileMenuOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+          onClick={() => setMobileMenuOpen((open) => !open)}
+        >
+          <span>{mobileMenuOpen ? 'Cerrar' : 'Menú'}</span>
+          <span className="mobile-nav-toggle__icon" aria-hidden="true"><i /><i /></span>
+        </button>
+        <HeaderNav currentRoute={currentRoute} navRef={navRef} onNavigate={() => setMobileMenuOpen(false)} />
+        <a
+          className="button button--primary button--header"
+          href={siteHref('/contact/')}
+          aria-current={currentRoute?.id === 'contact' ? 'page' : undefined}
+        >
+          Contacto
+        </a>
       </header>
+
+      {mobileMenuOpen ? (
+        <button
+          className="mobile-nav-scrim"
+          type="button"
+          tabIndex={-1}
+          aria-label="Cerrar menú de navegación"
+          onClick={() => closeMobileMenu(true)}
+        />
+      ) : null}
 
       {children}
 
