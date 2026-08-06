@@ -14,6 +14,7 @@
 
 - `public/brand/deliver-assets-mark.png`: exportación transparente del nodo `277:5`, recortada mediante un frame temporal que no se conservó en Figma.
 - Tamaño del activo de header: `96 × 73 px`, aproximadamente `9.3 KB`.
+- Contrato binario: PNG RGBA de 8 bits, con transparencia y límite automático de `32 KB`.
 - Render en desktop: ancho `54 px`; render móvil: ancho `44 px`.
 - `public/brand/city-network.svg`: ilustración editorial original inspirada por grano, halftone y líneas de ruta; no reproduce claims ni métricas de los moodboards.
 - `public/brand/og-brand.png`: tarjeta social `1200 × 630 px` generada con el símbolo oficial y los colores canónicos.
