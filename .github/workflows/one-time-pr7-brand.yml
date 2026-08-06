@@ -1,0 +1,38 @@
+name: One-time PR7 brand migration
+
+on:
+  push:
+    branches: [feat/brand-assets-editorial-imagery]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          ref: feat/brand-assets-editorial-imagery
+
+      - name: Apply brand asset migration
+        run: node scripts/apply-brand-assets-pr7.mjs
+
+      - name: Verify generated assets before commit
+        run: |
+          test -f public/brand/deliver-assets-mark.png
+          test -f public/brand/city-network.svg
+          test -f public/brand/og-brand.png
+          test ! -f src/brand-alignment.css
+          test ! -f scripts/apply-brand-assets-pr7.mjs
+          test ! -f .github/workflows/one-time-pr7-brand.yml
+
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(brand): version logo and editorial imagery"
+          git push origin HEAD:feat/brand-assets-editorial-imagery
