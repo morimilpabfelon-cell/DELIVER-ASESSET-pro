@@ -1,10 +1,10 @@
 # DELIVER ASSETS Pro
 
-Repositorio canónico del sitio público de DELIVER ASSETS y de la arquitectura de distribución de sus aplicaciones.
+Repositorio canónico del sitio corporativo público de DELIVER ASSETS y de la arquitectura de distribución de sus aplicaciones.
 
 ## Decisión de producto
 
-La página web **presenta, explica y distribuye**. No es el marketplace operativo principal.
+La página web **presenta, explica, publica información oficial y distribuye**. No es el marketplace ni la consola operativa principal.
 
 Las operaciones se realizarán en aplicaciones separadas:
 
@@ -13,11 +13,29 @@ Las operaciones se realizarán en aplicaciones separadas:
 - **DELIVER Rider:** aplicación móvil especializada.
 - **DELIVER Control:** acceso institucional restringido, sin descarga pública abierta.
 
+## Rutas públicas
+
+```text
+/
+/company/
+/services/
+/apps/
+/apps/customer/
+/apps/business/
+/apps/rider/
+/apps/control/
+/security/
+/news/
+/contact/
+```
+
+Las rutas se gobiernan desde `src/routes.json`. El build genera un directorio estático por ruta para que GitHub Pages pueda abrirlas directamente.
+
 ## Estado
 
-**Prototipo técnico y visual.** No existen descargas públicas, autenticación, pagos, ubicación, pedidos ni operaciones reales.
+El sitio corporativo es público. Las aplicaciones, la identidad operativa, los pagos, la ubicación, los pedidos y la distribución oficial todavía no están habilitados.
 
-Los controles de descarga permanecen deshabilitados deliberadamente hasta disponer de binarios verificados, firma, actualización y canales oficiales.
+No se publican descargas, fechas, cobertura, métricas ni datos corporativos que no hayan sido verificados.
 
 ## Desarrollo local
 
@@ -32,8 +50,17 @@ npm run dev
 npm run build
 ```
 
-## Arquitectura y controles
+El build ejecuta:
 
+1. TypeScript.
+2. Vite.
+3. Generación de rutas estáticas.
+4. Generación de `404.html`, sitemap y robots.
+5. Contrato corporativo y control de código/documentación obsoletos.
+
+## Documentación canónica
+
+- [Contrato del sitio corporativo](docs/CORPORATE-SITE.md)
 - [Arquitectura pública](docs/ARCHITECTURE.md)
 - [Fuente canónica de marca](docs/BRAND-SOURCE.md)
 - [Design System](docs/DESIGN-SYSTEM.md)
@@ -41,4 +68,4 @@ npm run build
 - [Política de seguridad](SECURITY.md)
 - [Guía de contribución](CONTRIBUTING.md)
 
-Todo cambio debe entrar mediante rama, pull request y evidencia verificable de compilación.
+Todo cambio debe entrar mediante rama, pull request y evidencia verificable de compilación. Los documentos de etapas reemplazadas deben consolidarse o eliminarse para evitar fuentes de verdad paralelas.
