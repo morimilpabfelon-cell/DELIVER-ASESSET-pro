@@ -75,3 +75,17 @@ Las páginas utilizan `siteHref()` y los archivos de `public/` utilizan `assetHr
 - [Guía de contribución](CONTRIBUTING.md)
 
 Todo cambio debe entrar mediante rama, pull request y evidencia verificable de compilación. Los documentos de etapas reemplazadas deben consolidarse o eliminarse para evitar fuentes de verdad paralelas.
+
+
+## Calidad y publicación verificable
+
+El contrato de ingeniería está en [docs/ENGINEERING-DOCTRINE.md](docs/ENGINEERING-DOCTRINE.md). El build usa dependencias bloqueadas, cobertura, análisis estático, Chrome instrumentado y metadata de release. GitHub Pages solo se considera validado cuando `release.json` y el HTML público exponen el SHA esperado.
+
+Comandos principales:
+
+```bash
+npm ci
+npm run quality
+npm run test:mutation
+npm run security:audit
+```
