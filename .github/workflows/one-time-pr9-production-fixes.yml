@@ -1,0 +1,46 @@
+name: One-time PR9 production visual fixes
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          ref: fix/public-assets-and-application-contrast
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Install dependencies without lockfile side effects
+        run: npm install --no-audit --no-fund --package-lock=false
+
+      - name: Apply production visual fixes
+        run: node scripts/apply-production-visual-fixes-pr9.mjs
+
+      - name: Verify final tree and build
+        run: |
+          test ! -f scripts/apply-production-visual-fixes-pr9.mjs
+          test ! -f .github/workflows/one-time-pr9-production-fixes.yml
+          test ! -f .github/pr9-trigger.txt
+          test ! -f package-lock.json
+          npm run build
+
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(web): resolve public assets and restore application contrast"
+          git push origin HEAD:fix/public-assets-and-application-contrast
