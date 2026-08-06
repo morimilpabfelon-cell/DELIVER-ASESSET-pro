@@ -19,7 +19,7 @@ const staticPath = 'scripts/verify-public-site.mjs';
 let staticCheck = await readFile(staticPath, 'utf8');
 const staticMarker = "if (sourceCss.includes('application-grid--light') || sourcePages.includes('application-grid--light')) errors.push('La variante de cuadrícula obsoleta todavía está presente');\n";
 if (!staticCheck.includes(staticMarker)) throw new Error('No se encontró el marcador estático');
-staticCheck = staticCheck.replace(staticMarker, staticMarker + "for (const term of ['.hero::before', 'border: 92px solid rgb(21 81 216 / 5%)', 'width: 620px', 'height: 620px']) if (sourceCss.includes(term)) errors.push(`Aro obsoleto presente: ${term}`);\n");
+staticCheck = staticCheck.replace(staticMarker, staticMarker + "for (const term of ['.hero::before', 'border: 92px solid rgb(21 81 216 / 5%)', 'top: -260px', 'left: -220px']) if (sourceCss.includes(term)) errors.push(`Aro obsoleto presente: ${term}`);\n");
 staticCheck = staticCheck.replace('activos públicos resolubles, contraste de aplicaciones y navegación móvil accesible.', 'hero sin aro, activos públicos resolubles, contraste de aplicaciones y navegación móvil accesible.');
 await writeFile(staticPath, staticCheck, 'utf8');
 
