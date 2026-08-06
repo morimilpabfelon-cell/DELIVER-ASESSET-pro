@@ -3,6 +3,8 @@ name: One-time PR7 brand migration
 on:
   push:
     branches: [feat/brand-assets-editorial-imagery]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
