@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && npm run verify:site",
+    "build": "tsc && vite build && npm run generate:routes && npm run verify:site",
     "check": "tsc",
+    "generate:routes": "node scripts/generate-static-routes.mjs",
     "verify:site": "node scripts/verify-public-site.mjs",
     "preview": "vite preview"
   },

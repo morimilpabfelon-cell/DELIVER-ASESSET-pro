@@ -1,0 +1,68 @@
+[
+  {
+    "id": "home",
+    "path": "/",
+    "title": "DELIVER ASSETS — Mover la ciudad. Una red visible.",
+    "description": "DELIVER ASSETS conecta personas, comercios y operadores mediante aplicaciones especializadas para comercio, delivery y paquetería."
+  },
+  {
+    "id": "company",
+    "path": "/company/",
+    "title": "Empresa — DELIVER ASSETS",
+    "description": "Conoce la misión, la visión, los principios y el estado actual de DELIVER ASSETS."
+  },
+  {
+    "id": "services",
+    "path": "/services/",
+    "title": "Servicios — DELIVER ASSETS",
+    "description": "Comercio local, entregas bajo demanda, paquetería urbana e infraestructura operacional conectadas por DELIVER ASSETS."
+  },
+  {
+    "id": "apps",
+    "path": "/apps/",
+    "title": "Aplicaciones — DELIVER ASSETS",
+    "description": "Conoce DELIVER Customer, Business, Rider y Control, sus funciones previstas y plataformas de distribución."
+  },
+  {
+    "id": "app-customer",
+    "path": "/apps/customer/",
+    "title": "DELIVER Customer — DELIVER ASSETS",
+    "description": "Compra, envía y sigue cada operación desde DELIVER Customer para móvil y escritorio."
+  },
+  {
+    "id": "app-business",
+    "path": "/apps/business/",
+    "title": "DELIVER Business — DELIVER ASSETS",
+    "description": "Organiza catálogo, pedidos, preparación y coordinación desde DELIVER Business."
+  },
+  {
+    "id": "app-rider",
+    "path": "/apps/rider/",
+    "title": "DELIVER Rider — DELIVER ASSETS",
+    "description": "Recibe asignaciones, navega y registra evidencias desde DELIVER Rider."
+  },
+  {
+    "id": "app-control",
+    "path": "/apps/control/",
+    "title": "DELIVER Control — DELIVER ASSETS",
+    "description": "Supervisión, incidencias y trazabilidad mediante acceso administrado a DELIVER Control."
+  },
+  {
+    "id": "security",
+    "path": "/security/",
+    "title": "Seguridad y confianza — DELIVER ASSETS",
+    "description": "Principios de acceso, minimización de datos, trazabilidad y reporte responsable de DELIVER ASSETS."
+  },
+  {
+    "id": "news",
+    "path": "/news/",
+    "title": "Noticias — DELIVER ASSETS",
+    "description": "Comunicaciones y novedades oficiales de DELIVER ASSETS."
+  },
+  {
+    "id": "contact",
+    "path": "/contact/",
+    "title": "Contacto — DELIVER ASSETS",
+    "description": "Encuentra la ruta adecuada para personas, comercios, riders, organizaciones y reportes de seguridad."
+  }
+]
