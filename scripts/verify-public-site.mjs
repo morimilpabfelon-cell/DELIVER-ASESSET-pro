@@ -74,6 +74,7 @@ const sourcePages = await readFile(join(repositoryRoot, 'src', 'pages.tsx'), 'ut
 if (!sourceSite.includes('export function assetHref')) errors.push('Falta el resolvedor exclusivo para activos públicos');
 if (sourceComponents.includes("siteHref('/brand/")) errors.push('Un activo público todavía usa siteHref');
 if (sourceCss.includes('application-grid--light') || sourcePages.includes('application-grid--light')) errors.push('La variante de cuadrícula obsoleta todavía está presente');
+for (const term of ['.hero::before', 'border: 92px solid rgb(21 81 216 / 5%)', 'top: -260px', 'left: -220px']) if (sourceCss.includes(term)) errors.push(`Aro obsoleto presente: ${term}`);
 const navigationRequirements = [
   'id="site-navigation"',
   'aria-controls="site-navigation"',
@@ -102,4 +103,4 @@ for (const requiredDocument of ['ARCHITECTURE.md', 'CORPORATE-SITE.md', 'DESIGN-
   if (!await pathExists(join(repositoryRoot, 'docs', requiredDocument))) errors.push(`Documento de gobierno ausente: docs/${requiredDocument}`);
 }
 if (errors.length > 0) throw new Error(errors.join('\n'));
-console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS, activos públicos resolubles, contraste de aplicaciones y navegación móvil accesible.`);
+console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS, hero sin aro, activos públicos resolubles, contraste de aplicaciones y navegación móvil accesible.`);
