@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   migrate:
@@ -21,9 +21,11 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: chore/engineering-quality-baseline
-      - name: Capture starting revision
-        id: start
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Capture migration files
+        run: |
+          mkdir -p /tmp/pr11-migration/.github/workflows /tmp/pr11-migration/scripts
+          cp .github/workflows/one-time-pr11.yml /tmp/pr11-migration/.github/workflows/
+          cp scripts/apply-pr11.mjs scripts/fix-pr11-generator.mjs /tmp/pr11-migration/scripts/
       - name: Setup Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
@@ -44,7 +46,7 @@ jobs:
           npm pkg set packageManager="npm@10.9.8"
       - name: Run full quality baseline
         env:
-          BUILD_SHA: ${{ steps.start.outputs.sha }}
+          BUILD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           npm run quality
           npm run test:mutation
@@ -56,23 +58,16 @@ jobs:
           test ! -e .github/workflows/one-time-pr11.yml
           test -f package-lock.json
           ! git grep -n "npm install" -- .github/workflows/ci.yml .github/workflows/pages.yml
-      - name: Package validated final tree
+      - name: Restore migration files for connector cleanup
         run: |
-          tar \
-            --exclude=.git \
-            --exclude=node_modules \
-            --exclude=dist \
-            --exclude=coverage \
-            --exclude=reports \
-            --exclude=.stryker-tmp \
-            -czf /tmp/pr11-final-tree.tar.gz .
-          sha256sum /tmp/pr11-final-tree.tar.gz | tee /tmp/pr11-final-tree.sha256
-      - name: Upload validated final tree
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: pr11-final-tree
-          path: |
-            /tmp/pr11-final-tree.tar.gz
-            /tmp/pr11-final-tree.sha256
-          retention-days: 7
-          if-no-files-found: error
+          mkdir -p .github/workflows scripts
+          cp /tmp/pr11-migration/.github/workflows/one-time-pr11.yml .github/workflows/
+          cp /tmp/pr11-migration/scripts/apply-pr11.mjs /tmp/pr11-migration/scripts/fix-pr11-generator.mjs scripts/
+      - name: Commit non-workflow baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "No hay cambios por publicar"; exit 1; }
+          git commit -m "Chore: baseline de calidad y despliegue verificable"
+          git push origin HEAD:chore/engineering-quality-baseline
