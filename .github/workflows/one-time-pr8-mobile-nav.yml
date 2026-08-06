@@ -28,6 +28,23 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Correct TypeScript focus narrowing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/apply-mobile-navigation-pr8.mjs')
+          source = path.read_text()
+          source = source.replace(
+              "      (element): element is HTMLElement => element instanceof HTMLElement,",
+              "      (element): element is HTMLButtonElement | HTMLAnchorElement => element !== null,",
+          )
+          source = source.replace(
+              "      const firstElement = focusableElements[0];\n      const lastElement = focusableElements[focusableElements.length - 1];",
+              "      const firstElement = focusableElements.at(0);\n      const lastElement = focusableElements.at(-1);\n      if (!firstElement || !lastElement) return;",
+          )
+          path.write_text(source)
+          PY
+
       - name: Apply accessible navigation migration
         run: node scripts/apply-mobile-navigation-pr8.mjs
 
