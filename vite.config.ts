@@ -5,6 +5,7 @@ export default defineConfig({
   base: '/DELIVER-ASESSET-pro/',
   plugins: [react()],
   build: {
-    sourcemap: true,
+    target: 'es2022',
+    sourcemap: false,
   },
 });

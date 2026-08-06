@@ -254,7 +254,7 @@ export function EditorialNetwork() {
 
 function CustomerVisual() {
   return (
-    <div className="product-visual product-visual--phone product-visual--customer" aria-label="Vista conceptual de DELIVER Customer">
+    <div className="product-visual product-visual--phone product-visual--customer" role="img" aria-label="Vista conceptual de DELIVER Customer">
       <div className="phone-shell">
         <div className="phone-status"><span>09:41</span><span>● ●</span></div>
         <div className="phone-heading"><strong>Descubre</strong><span className="avatar-dot" /></div>
@@ -270,7 +270,7 @@ function CustomerVisual() {
 
 function BusinessVisual() {
   return (
-    <div className="product-visual product-visual--desktop product-visual--business" aria-label="Vista conceptual de DELIVER Business">
+    <div className="product-visual product-visual--desktop product-visual--business" role="img" aria-label="Vista conceptual de DELIVER Business">
       <div className="desktop-window">
         <aside className="desktop-sidebar"><strong>DELIVER</strong><b>Resumen</b><span>Pedidos</span><span>Catálogo</span><span>Equipo</span></aside>
         <div className="desktop-content">
@@ -285,7 +285,7 @@ function BusinessVisual() {
 
 function RiderVisual() {
   return (
-    <div className="product-visual product-visual--phone product-visual--rider" aria-label="Vista conceptual de DELIVER Rider">
+    <div className="product-visual product-visual--phone product-visual--rider" role="img" aria-label="Vista conceptual de DELIVER Rider">
       <div className="phone-shell">
         <div className="phone-status"><span>09:41</span><span>● ●</span></div>
         <div className="phone-heading"><strong>Ruta activa</strong><StatusBadge>En curso</StatusBadge></div>
@@ -300,7 +300,7 @@ function RiderVisual() {
 
 function ControlVisual() {
   return (
-    <div className="product-visual product-visual--desktop product-visual--control" aria-label="Vista conceptual de DELIVER Control">
+    <div className="product-visual product-visual--desktop product-visual--control" role="img" aria-label="Vista conceptual de DELIVER Control">
       <div className="desktop-window desktop-window--dark">
         <aside className="desktop-sidebar"><strong>DELIVER</strong><b>Operación</b><span>Alertas</span><span>Incidencias</span><span>Auditoría</span></aside>
         <div className="desktop-content">

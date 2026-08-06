@@ -1,4 +1,5 @@
 import routeManifest from './routes.json';
+import { assetHrefFrom, getAllowedQueryValue, normalizeBaseUrl, normalizeCorporatePathFrom, siteHrefFrom } from './routing';
 
 export type AppId = 'customer' | 'business' | 'rider' | 'control';
 export type Availability = 'Próximamente' | 'Acceso administrado';
@@ -41,37 +42,18 @@ export type Service = {
 export const routes = routeManifest as CorporateRoute[];
 export const appIds: AppId[] = ['customer', 'business', 'rider', 'control'];
 
-const baseUrl = import.meta.env.BASE_URL.endsWith('/')
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
+const baseUrl = normalizeBaseUrl(import.meta.env.BASE_URL);
 
 export function assetHref(path: string): string {
-  const normalizedPath = path.replace(/^\/+/, '');
-  return `${baseUrl}${normalizedPath}`;
+  return assetHrefFrom(baseUrl, path);
 }
 
 export function siteHref(path: string): string {
-  if (path.startsWith('#')) return path;
-
-  const [rawPath, rawHash] = path.split('#');
-  const normalizedPath = rawPath === '/'
-    ? ''
-    : `${rawPath.replace(/^\/+|\/+$/g, '')}/`;
-  const hash = rawHash ? `#${rawHash}` : '';
-
-  return `${baseUrl}${normalizedPath}${hash}`;
+  return siteHrefFrom(baseUrl, path);
 }
 
 export function normalizeCorporatePath(pathname: string): string {
-  const basePath = new URL(baseUrl, window.location.origin).pathname.replace(/\/$/, '');
-  let path = pathname;
-
-  if (basePath && path.startsWith(basePath)) {
-    path = path.slice(basePath.length);
-  }
-
-  if (!path || path === '/') return '/';
-  return `/${path.replace(/^\/+|\/+$/g, '')}/`;
+  return normalizeCorporatePathFrom(baseUrl, pathname, window.location.origin);
 }
 
 export function resolveRoute(pathname: string): CorporateRoute | null {
@@ -84,10 +66,8 @@ export function appRoute(id: AppId): string {
 }
 
 export function getLegacyAppRedirect(search: string): string | null {
-  const requested = new URLSearchParams(search).get('app');
-  return appIds.includes(requested as AppId)
-    ? appRoute(requested as AppId)
-    : null;
+  const requested = getAllowedQueryValue(search, 'app', appIds);
+  return requested ? appRoute(requested) : null;
 }
 
 export const services: Service[] = [
