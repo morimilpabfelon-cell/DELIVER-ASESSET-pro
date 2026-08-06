@@ -115,6 +115,8 @@ No se activa un formulario hasta disponer de:
 
 Un documento se conserva únicamente si gobierna una decisión vigente.
 
+También se considera código muerto cualquier exportación, selector, variable CSS o dependencia que no tenga consumo actual ni una reserva explícitamente documentada.
+
 Al reemplazar una arquitectura:
 
 1. actualizar el documento canónico;
