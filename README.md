@@ -57,6 +57,11 @@ El build ejecuta:
 3. Generación de rutas estáticas.
 4. Generación de `404.html`, sitemap y robots.
 5. Contrato corporativo y control de código/documentación obsoletos.
+6. Chrome headless para navegación móvil, foco y responsive.
+7. Carga real del logo y de la ilustración editorial mediante sus dimensiones naturales.
+8. Contraste y fondos canónicos de Customer, Business, Rider y Control.
+
+Las páginas utilizan `siteHref()` y los archivos de `public/` utilizan `assetHref()`. Un activo inexistente debe responder HTTP 404; no puede quedar oculto mediante una página HTML servida con estado 200.
 
 ## Documentación canónica
 
