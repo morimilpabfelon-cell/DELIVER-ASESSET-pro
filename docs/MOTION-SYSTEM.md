@@ -40,3 +40,5 @@ Los estados visuales son conceptuales. No representan pedidos, comercios, ubicac
 ## Criterio de terminación
 
 El cambio solo se considera validado cuando el SHA final pasa CI, mutation testing y CodeQL, se despliega mediante el pipeline reproducible y la URL pública confirma ese mismo SHA en `release.json`.
+
+La solicitud explícita de checks forma parte del registro del PR cuando el proveedor no los solicita automáticamente.
