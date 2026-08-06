@@ -1,0 +1,49 @@
+name: One-time CSS cleanup
+
+on:
+  push:
+    branches: [feat/corporate-foundation-v1]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          ref: feat/corporate-foundation-v1
+
+      - name: Remove unused CSS variables and workflow
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, unlink, writeFile } from 'node:fs/promises';
+
+          const cssPath = 'src/styles.css';
+          const workflowPath = '.github/workflows/one-time-css-cleanup.yml';
+          let css = await readFile(cssPath, 'utf8');
+
+          for (const declaration of [
+            '  --surface: #ffffff;\n',
+            '  --danger: #e3261d;\n',
+          ]) {
+            if (!css.includes(declaration)) {
+              throw new Error(`Declaración esperada ausente: ${declaration.trim()}`);
+            }
+            css = css.replace(declaration, '');
+          }
+
+          await writeFile(cssPath, css, 'utf8');
+          await unlink(workflowPath);
+          NODE
+
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/styles.css .github/workflows/one-time-css-cleanup.yml
+          git commit -m "refactor(styles): remove unused variables"
+          git push origin HEAD:feat/corporate-foundation-v1
