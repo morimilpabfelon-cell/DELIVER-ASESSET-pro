@@ -19,8 +19,24 @@ jobs:
         with:
           ref: feat/brand-assets-editorial-imagery
 
+      - name: Prepare verified logo source
+        run: |
+          mkdir -p public/brand
+          base64 --decode scripts/deliver-assets-mark.b64 > public/brand/deliver-assets-mark.png
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const scriptPath = 'scripts/apply-brand-assets-pr7.mjs';
+          let source = await readFile(scriptPath, 'utf8');
+          const replacement = "const markBase64 = (await readFile(join(root, 'public', 'brand', 'deliver-assets-mark.png'))).toString('base64');";
+          const next = source.replace(/const markBase64 = '[^']*';/, replacement);
+          if (next === source) throw new Error('No se encontró la constante temporal del logo');
+          await writeFile(scriptPath, next, 'utf8');
+          NODE
+
       - name: Apply brand asset migration
-        run: node scripts/apply-brand-assets-pr7.mjs
+        run: |
+          node scripts/apply-brand-assets-pr7.mjs
+          rm -f scripts/deliver-assets-mark.b64 .pr7-trigger
 
       - name: Verify generated assets before commit
         run: |
@@ -29,7 +45,9 @@ jobs:
           test -f public/brand/og-brand.png
           test ! -f src/brand-alignment.css
           test ! -f scripts/apply-brand-assets-pr7.mjs
+          test ! -f scripts/deliver-assets-mark.b64
           test ! -f .github/workflows/one-time-pr7-brand.yml
+          test ! -f .pr7-trigger
 
       - name: Commit migration
         run: |
