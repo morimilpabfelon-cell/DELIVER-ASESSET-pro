@@ -57,7 +57,6 @@ const notFoundRoute = {
 };
 
 await writeFile(join(distDirectory, '404.html'), renderRouteHtml(notFoundRoute), 'utf8');
-await writeFile(join(distDirectory, '.nojekyll'), '', 'utf8');
 
 const sitemapEntries = routes
   .map((route) => `  <url><loc>${routeUrl(route)}</loc></url>`)
