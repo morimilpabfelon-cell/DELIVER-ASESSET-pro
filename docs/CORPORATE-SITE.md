@@ -142,3 +142,10 @@ Al reemplazar una arquitectura:
 - El build debe abrir logo e ilustración en Chrome y comprobar dimensiones naturales mayores que cero.
 - Customer, Business, Rider y Control mantienen fondos blanco, amarillo, rojo y negro respectivamente.
 - Una variante de cuadrícula no puede anular el fondo de una aplicación sin actualizar también su contrato de contraste.
+
+
+## Hero sin aro decorativo
+
+- El hero de Inicio no utiliza pseudo-elementos circulares, anillos ni manchas de fondo.
+- `.hero::before` está prohibido por el contrato estático y por Chrome.
+- `position`, `overflow` e `isolation` no se conservan cuando solo sostenían esa decoración.

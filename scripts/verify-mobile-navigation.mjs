@@ -261,6 +261,11 @@ try {
   assert(!report.publicAssets.logoSrc.endsWith('/'), 'La URL del logo termina en slash');
   assert(!report.publicAssets.heroSrc.endsWith('/'), 'La URL de la ilustración termina en slash');
 
+  report.heroDecoration = await evaluate(client, `(() => { const hero = document.querySelector('.hero'); const pseudo = getComputedStyle(hero, '::before'); const style = getComputedStyle(hero); return { content: pseudo.content, border: pseudo.borderTopWidth, position: style.position, overflow: style.overflow, isolation: style.isolation }; })()`);
+  assert(['none', 'normal'].includes(report.heroDecoration.content), 'El pseudo-elemento circular del hero todavía existe');
+  assert(report.heroDecoration.border === '0px', 'El borde circular del hero todavía existe');
+  assert(report.heroDecoration.position === 'static' && report.heroDecoration.overflow === 'visible' && report.heroDecoration.isolation === 'auto', 'Quedó CSS de soporte del aro');
+
   await evaluate(client, "document.querySelector('.mobile-nav-toggle').click()");
   await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'true'");
   await waitFor(client, "document.activeElement?.textContent?.trim() === 'Empresa'");
@@ -359,7 +364,7 @@ try {
   assert(report.tablet.wrap === 'wrap', 'La navegación tablet no permite ajuste de línea');
 
   console.log(JSON.stringify(report, null, 2));
-  console.log('Web verificada en Chrome: activos públicos, contraste, foco, teclado, cierre, estado activo y responsive.');
+  console.log('Web verificada en Chrome: hero sin aro, activos públicos, contraste, foco, teclado, cierre, estado activo y responsive.');
 } finally {
   client?.close();
   browser.kill('SIGTERM');
