@@ -37,12 +37,25 @@ const site = await readFile(join(root, 'src', 'site.ts'), 'utf8');
 if (!site.includes("from './routing'")) errors.push('Las rutas no están separadas en un módulo puro');
 const vite = await readFile(join(root, 'vite.config.ts'), 'utf8');
 if (!vite.includes('sourcemap: false')) errors.push('Vite no desactiva sourcemaps de producción');
-for (const workflow of ['.github/workflows/ci.yml', '.github/workflows/pages.yml']) {
+const workflowPaths = ['.github/workflows/ci.yml', '.github/workflows/pages.yml', '.github/workflows/codeql.yml'];
+const workflows = new Map();
+for (const workflow of workflowPaths) {
   const content = await readFile(join(root, workflow), 'utf8');
+  workflows.set(workflow, content);
+  const uses = [...content.matchAll(/^\s*uses:\s*([^@\s]+)@([^\s#]+)\s*$/gm)];
+  if (uses.length === 0) errors.push(`${workflow} no declara acciones externas`);
+  for (const [, action, ref] of uses) {
+    if (!/^[a-f0-9]{40}$/.test(ref)) errors.push(`${workflow} usa una referencia móvil: ${action}@${ref}`);
+  }
+}
+for (const workflow of ['.github/workflows/ci.yml', '.github/workflows/pages.yml']) {
+  const content = workflows.get(workflow);
   if (content.includes('npm install')) errors.push(`${workflow} usa npm install`);
   if (!content.includes('npm ci')) errors.push(`${workflow} no usa npm ci`);
 }
-const pages = await readFile(join(root, '.github/workflows/pages.yml'), 'utf8');
+const ci = workflows.get('.github/workflows/ci.yml');
+if (!ci.includes('actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a')) errors.push('CI no usa upload-artifact v7 fijado por SHA');
+const pages = workflows.get('.github/workflows/pages.yml');
 for (const marker of ['types: [closed]', 'release.json', 'EXPECTED_SHA']) if (!pages.includes(marker)) errors.push(`Pages sin marcador: ${marker}`);
 if (errors.length) throw new Error(errors.join('\n'));
-console.log('Baseline de calidad verificado: lockfile, build identificable, sin sourcemaps, CI reproducible y despliegue verificable.');
+console.log('Baseline de calidad verificado: lockfile, build identificable, sin sourcemaps, acciones fijadas, CI reproducible y despliegue verificable.');
