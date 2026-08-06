@@ -67,9 +67,9 @@ jobs:
           const marker = 'const files = await collect(dist);';
           const hygiene = [
             "const gitignore = await readFile(join(root, '.gitignore'), 'utf8');",
-            "const ignoredEntries = new Set(gitignore.split(/\\r?\\n/).map((entry) => entry.trim()).filter(Boolean));",
+            "const ignoredEntries = new Set(gitignore.split(String.fromCharCode(10)).map((entry) => entry.trim()).filter(Boolean));",
             "for (const entry of ['node_modules/', 'dist/', 'coverage/', 'reports/', '.stryker-tmp/']) if (!ignoredEntries.has(entry)) errors.push('Falta en .gitignore: ' + entry);",
-            "if (gitignore.includes('$' + '{gitignore.trim()}')) errors.push('.gitignore contiene una plantilla sin resolver');",
+            "if (gitignore.includes('gitignore.trim')) errors.push('.gitignore contiene una plantilla sin resolver');",
             "const trackedNodeModules = execFileSync('git', ['ls-files', 'node_modules'], { cwd: root, encoding: 'utf8' }).trim();",
             "if (trackedNodeModules) errors.push('node_modules contiene archivos versionados');",
             "for (const temporary of ['scripts/apply-pr11.mjs', 'scripts/fix-pr11-generator.mjs', '.github/workflows/one-time-pr11.yml']) if (await exists(join(root, temporary))) errors.push('Archivo temporal presente: ' + temporary);",
