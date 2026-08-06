@@ -1,13 +1,14 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 type AppId = 'customer' | 'business' | 'rider' | 'control';
+type Availability = 'Próximamente' | 'Acceso administrado';
 
 type Platform = {
   name: string;
   use: string;
-  availability: 'Planificada' | 'Acceso privado';
+  availability: Availability;
 };
 
 type Product = {
@@ -17,6 +18,7 @@ type Product = {
   headline: string;
   summary: string;
   audience: string;
+  releaseLabel: Availability;
   capabilities: string[];
   steps: Array<{ title: string; text: string }>;
   platforms: Platform[];
@@ -28,45 +30,46 @@ const products: Record<AppId, Product> = {
   customer: {
     id: 'customer',
     name: 'DELIVER Customer',
-    label: 'PARA CLIENTES',
-    headline: 'Compra, envía y sigue cada operación desde una aplicación dedicada.',
+    label: 'PARA PERSONAS',
+    headline: 'Compra, envía y sigue todo desde una sola cuenta.',
     summary:
-      'Customer será la aplicación para explorar comercios, crear pedidos, solicitar envíos y consultar el seguimiento con una sola cuenta.',
+      'La aplicación para descubrir comercios, solicitar entregas, enviar paquetes y consultar cada avance sin perder el contexto.',
     audience: 'Personas que compran, reciben o envían productos y paquetes.',
+    releaseLabel: 'Próximamente',
     capabilities: [
       'Explorar comercios y categorías',
       'Crear pedidos y envíos',
-      'Rastrear operaciones',
+      'Seguir cada operación',
       'Gestionar direcciones',
       'Consultar historial y comprobantes',
-      'Acceder a soporte e incidencias',
+      'Resolver dudas e incidencias',
     ],
     steps: [
-      { title: 'Descarga', text: 'Instala la aplicación correspondiente a tu dispositivo.' },
-      { title: 'Configura', text: 'Crea una cuenta y define tus datos de entrega.' },
-      { title: 'Opera', text: 'Compra en un comercio o crea un envío independiente.' },
-      { title: 'Sigue', text: 'Consulta estados, evidencias y soporte desde la aplicación.' },
+      { title: 'Descarga', text: 'Instala DELIVER Customer desde el canal oficial de tu dispositivo.' },
+      { title: 'Configura', text: 'Crea tu cuenta y guarda las direcciones que utilizas con frecuencia.' },
+      { title: 'Elige', text: 'Compra en un comercio o solicita un envío independiente.' },
+      { title: 'Sigue', text: 'Consulta el estado, las actualizaciones y el soporte desde la aplicación.' },
     ],
     platforms: [
-      { name: 'Android', use: 'Aplicación móvil principal', availability: 'Planificada' },
-      { name: 'iPhone y iPad', use: 'Aplicación móvil principal', availability: 'Planificada' },
-      { name: 'Windows', use: 'Pedidos y seguimiento en escritorio', availability: 'Planificada' },
-      { name: 'macOS', use: 'Pedidos y seguimiento en escritorio', availability: 'Planificada' },
-      { name: 'Linux', use: 'Pedidos y seguimiento en escritorio', availability: 'Planificada' },
+      { name: 'Android', use: 'Compras, envíos y seguimiento móvil', availability: 'Próximamente' },
+      { name: 'iPhone y iPad', use: 'Compras, envíos y seguimiento móvil', availability: 'Próximamente' },
+      { name: 'Windows', use: 'Operación y seguimiento en escritorio', availability: 'Próximamente' },
+      { name: 'macOS', use: 'Operación y seguimiento en escritorio', availability: 'Próximamente' },
+      { name: 'Linux', use: 'Operación y seguimiento en escritorio', availability: 'Próximamente' },
     ],
-    accessNote: 'Todavía no existen binarios públicos ni enlaces oficiales de tienda.',
+    accessNote: 'La publicación se realizará por etapas cuando cada cliente supere validación, firma y distribución oficial.',
     faqs: [
       {
-        question: '¿Se podrá comprar desde esta página web?',
-        answer: 'No. El sitio explica el servicio y dirige a la aplicación. La operación principal ocurre en Customer.',
+        question: '¿Se podrá comprar desde la web corporativa?',
+        answer: 'La web presenta el servicio y dirige a las aplicaciones. Las compras, los envíos y el seguimiento se realizarán en DELIVER Customer.',
       },
       {
         question: '¿La misma cuenta funcionará en móvil y escritorio?',
-        answer: 'Esa es la arquitectura prevista, sujeta a contratos de identidad y sincronización todavía no implementados.',
+        answer: 'Sí. La experiencia está planteada para conservar cuenta, historial y operaciones entre dispositivos compatibles.',
       },
       {
-        question: '¿La aplicación ya está disponible?',
-        answer: 'No. Esta página documenta la distribución planificada sin presentar descargas ficticias.',
+        question: '¿Cuándo estará disponible?',
+        answer: 'La fecha se comunicará únicamente cuando existan versiones verificadas y canales oficiales de distribución.',
       },
     ],
   },
@@ -74,44 +77,45 @@ const products: Record<AppId, Product> = {
     id: 'business',
     name: 'DELIVER Business',
     label: 'PARA COMERCIOS',
-    headline: 'Gestiona catálogo, pedidos y operación desde una aplicación empresarial.',
+    headline: 'Tu catálogo, tus pedidos y tu operación en un solo lugar.',
     summary:
-      'Business concentrará la operación comercial en escritorio y ofrecerá funciones móviles complementarias para acciones rápidas.',
+      'Una aplicación empresarial para organizar sucursales, preparar pedidos, coordinar entregas y mantener visible cada responsabilidad.',
     audience: 'Comercios, sucursales, operadores y equipos de atención.',
+    releaseLabel: 'Próximamente',
     capabilities: [
       'Catálogo y disponibilidad',
       'Recepción y preparación de pedidos',
-      'Sucursales y usuarios',
-      'Coordinación logística',
+      'Sucursales, usuarios y permisos',
+      'Coordinación de entregas',
       'Incidencias y soporte',
-      'Reportes operativos',
+      'Reportes para la operación',
     ],
     steps: [
-      { title: 'Alta', text: 'La organización completa validación y configuración comercial.' },
-      { title: 'Configura', text: 'Crea sucursales, catálogo, permisos y reglas operativas.' },
-      { title: 'Recibe', text: 'Gestiona pedidos y preparación desde la aplicación.' },
-      { title: 'Coordina', text: 'Entrega la operación a logística y conserva trazabilidad.' },
+      { title: 'Registra', text: 'Completa el alta de la organización y la validación comercial.' },
+      { title: 'Configura', text: 'Define sucursales, catálogo, permisos y reglas de atención.' },
+      { title: 'Prepara', text: 'Recibe pedidos y coordina el trabajo de cada equipo.' },
+      { title: 'Entrega', text: 'Conecta la operación con logística y conserva trazabilidad.' },
     ],
     platforms: [
-      { name: 'Windows', use: 'Operación principal de escritorio', availability: 'Planificada' },
-      { name: 'macOS', use: 'Operación principal de escritorio', availability: 'Planificada' },
-      { name: 'Linux', use: 'Operación principal de escritorio', availability: 'Planificada' },
-      { name: 'Android', use: 'Aplicación complementaria', availability: 'Planificada' },
-      { name: 'iPhone y iPad', use: 'Aplicación complementaria', availability: 'Planificada' },
+      { name: 'Windows', use: 'Superficie principal para la operación', availability: 'Próximamente' },
+      { name: 'macOS', use: 'Superficie principal para la operación', availability: 'Próximamente' },
+      { name: 'Linux', use: 'Superficie principal para la operación', availability: 'Próximamente' },
+      { name: 'Android', use: 'Acciones rápidas y notificaciones', availability: 'Próximamente' },
+      { name: 'iPhone y iPad', use: 'Acciones rápidas y notificaciones', availability: 'Próximamente' },
     ],
-    accessNote: 'El registro comercial y las descargas todavía no están habilitados.',
+    accessNote: 'El alta comercial se habilitará junto con los primeros canales oficiales de distribución.',
     faqs: [
       {
-        question: '¿Business será solo móvil?',
-        answer: 'No. La superficie principal está prevista para escritorio; el móvil será complementario.',
+        question: '¿Business será únicamente móvil?',
+        answer: 'No. La experiencia principal está diseñada para escritorio; el móvil complementará alertas y acciones rápidas.',
       },
       {
-        question: '¿Puedo registrar mi negocio ahora?',
-        answer: 'No. Aún no existe un flujo de alta productivo ni validación comercial habilitada.',
+        question: '¿Admitirá varias sucursales y usuarios?',
+        answer: 'Sí. La arquitectura contempla organizaciones, sucursales, permisos y trazabilidad por usuario.',
       },
       {
-        question: '¿Habrá múltiples usuarios y sucursales?',
-        answer: 'Está previsto, pero requiere identidad, RBAC y auditoría reales antes de publicarse.',
+        question: '¿Ya puedo registrar mi negocio?',
+        answer: 'El registro se abrirá cuando el proceso comercial, la validación y el soporte estén operativos.',
       },
     ],
   },
@@ -119,41 +123,42 @@ const products: Record<AppId, Product> = {
     id: 'rider',
     name: 'DELIVER Rider',
     label: 'PARA OPERADORES EN CAMPO',
-    headline: 'Asignaciones, navegación y evidencia en una aplicación móvil especializada.',
+    headline: 'Cada ruta, cada evidencia y cada siguiente acción.',
     summary:
-      'Rider será una aplicación móvil separada porque depende de ubicación, cámara, notificaciones y operación confiable en campo.',
+      'Una aplicación móvil especializada para recibir asignaciones, navegar, registrar transiciones y resolver incidencias en campo.',
     audience: 'Riders, conductores y operadores autorizados de recogida y entrega.',
+    releaseLabel: 'Próximamente',
     capabilities: [
       'Recepción de asignaciones',
       'Navegación y paradas',
       'Estados de recogida y entrega',
       'Evidencia autorizada',
       'Gestión de incidencias',
-      'Operación con conectividad limitada',
+      'Continuidad con conectividad limitada',
     ],
     steps: [
-      { title: 'Autoriza', text: 'El operador completa validación y recibe acceso aprobado.' },
-      { title: 'Activa', text: 'Configura permisos del dispositivo y disponibilidad.' },
-      { title: 'Ejecuta', text: 'Recibe una asignación y registra cada transición.' },
-      { title: 'Cierra', text: 'Confirma entrega o escala una incidencia con evidencia.' },
+      { title: 'Valida', text: 'Completa el proceso de autorización y activa tu acceso.' },
+      { title: 'Prepara', text: 'Configura permisos, disponibilidad y condiciones del dispositivo.' },
+      { title: 'Ejecuta', text: 'Recibe una asignación y registra cada cambio de estado.' },
+      { title: 'Cierra', text: 'Confirma la entrega o escala una incidencia con evidencia.' },
     ],
     platforms: [
-      { name: 'Android', use: 'Plataforma móvil prioritaria', availability: 'Planificada' },
-      { name: 'iPhone', use: 'Plataforma móvil sujeta a validación', availability: 'Planificada' },
+      { name: 'Android', use: 'Plataforma móvil prioritaria', availability: 'Próximamente' },
+      { name: 'iPhone', use: 'Plataforma móvil complementaria', availability: 'Próximamente' },
     ],
-    accessNote: 'No habrá descarga pública operativa sin validación, identidad y permisos aprobados.',
+    accessNote: 'La aplicación podrá descargarse por canales oficiales, pero operar exigirá autorización e identidad verificadas.',
     faqs: [
       {
-        question: '¿Existirá Rider para escritorio?',
-        answer: 'No está previsto para la primera etapa; la operación depende del dispositivo móvil en campo.',
+        question: '¿Existirá una versión para escritorio?',
+        answer: 'No está prevista para la primera etapa porque la operación depende de ubicación, cámara y notificaciones móviles.',
       },
       {
-        question: '¿Cualquiera podrá descargar y operar?',
-        answer: 'La descarga puede ser pública en el futuro, pero operar exigirá autorización y controles de identidad.',
+        question: '¿Descargar la aplicación será suficiente para operar?',
+        answer: 'No. El acceso operativo requerirá autorización, identidad y permisos correspondientes.',
       },
       {
-        question: '¿Ya utiliza GPS?',
-        answer: 'No. El repositorio actual es únicamente el sitio público y no solicita ubicación.',
+        question: '¿La aplicación funcionará con conectividad limitada?',
+        answer: 'La continuidad controlada forma parte del diseño previsto y se validará antes de la publicación.',
       },
     ],
   },
@@ -161,10 +166,11 @@ const products: Record<AppId, Product> = {
     id: 'control',
     name: 'DELIVER Control',
     label: 'PARA OPERACIÓN AUTORIZADA',
-    headline: 'Supervisión, incidencias y auditoría bajo acceso institucional restringido.',
+    headline: 'Supervisión y respuesta con permisos, contexto y trazabilidad.',
     summary:
-      'Control no se distribuirá como una aplicación pública abierta. Su acceso dependerá de organización, rol, autenticación reforzada y dispositivo aprobado.',
+      'La superficie institucional para observar operaciones, resolver incidencias y conservar evidencia de decisiones sensibles.',
     audience: 'Equipos internos y organizaciones expresamente autorizadas.',
+    releaseLabel: 'Acceso administrado',
     capabilities: [
       'Supervisión operacional',
       'Gestión de incidencias',
@@ -174,28 +180,28 @@ const products: Record<AppId, Product> = {
       'Configuración restringida',
     ],
     steps: [
-      { title: 'Invitación', text: 'Una organización autorizada asigna acceso a un usuario.' },
-      { title: 'Verificación', text: 'Se valida identidad, rol y dispositivo.' },
-      { title: 'Supervisión', text: 'El operador accede únicamente a funciones permitidas.' },
-      { title: 'Auditoría', text: 'Las decisiones críticas conservan evidencia verificable.' },
+      { title: 'Invita', text: 'Una organización autorizada asigna acceso a un usuario.' },
+      { title: 'Verifica', text: 'Se validan identidad, rol y dispositivo.' },
+      { title: 'Supervisa', text: 'El operador accede únicamente a las funciones permitidas.' },
+      { title: 'Audita', text: 'Las decisiones críticas conservan contexto y evidencia.' },
     ],
     platforms: [
-      { name: 'Escritorio autorizado', use: 'Distribución administrada', availability: 'Acceso privado' },
-      { name: 'Navegador interno', use: 'Acceso protegido cuando sea necesario', availability: 'Acceso privado' },
+      { name: 'Escritorio autorizado', use: 'Distribución administrada por organización', availability: 'Acceso administrado' },
+      { name: 'Navegador interno', use: 'Acceso protegido cuando sea necesario', availability: 'Acceso administrado' },
     ],
-    accessNote: 'No existirá un botón público de descarga para Control.',
+    accessNote: 'Control no tendrá una descarga pública abierta. El acceso dependerá de organización, rol y dispositivo aprobados.',
     faqs: [
       {
         question: '¿Por qué Control no tiene descarga pública?',
-        answer: 'Porque administra funciones sensibles y exige gobierno de acceso, auditoría y dispositivos autorizados.',
+        answer: 'Porque reúne funciones sensibles y necesita gobierno de acceso, auditoría y dispositivos autorizados.',
       },
       {
-        question: '¿Control será una app móvil?',
-        answer: 'No es prioritario. La superficie principal está prevista para escritorio o acceso web interno protegido.',
+        question: '¿Será una aplicación móvil?',
+        answer: 'No es la prioridad. La superficie principal está planteada para escritorio o acceso web interno protegido.',
       },
       {
-        question: '¿Existe acceso administrativo ahora?',
-        answer: 'No. No hay autenticación, roles ni entorno operativo habilitado.',
+        question: '¿Cómo se concederá acceso?',
+        answer: 'Mediante una organización autorizada y controles de identidad, rol y dispositivo.',
       },
     ],
   },
@@ -206,6 +212,54 @@ const productIds = Object.keys(products) as AppId[];
 function getSelectedProduct(): Product | null {
   const requested = new URLSearchParams(window.location.search).get('app');
   return productIds.includes(requested as AppId) ? products[requested as AppId] : null;
+}
+
+function useRevealAnimations() {
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.documentElement.classList.add('motion-ready');
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('is-visible'));
+      return () => document.documentElement.classList.remove('motion-ready');
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove('motion-ready');
+    };
+  }, []);
+}
+
+function usePageMetadata(product: Product | null) {
+  useEffect(() => {
+    const title = product
+      ? `${product.name} — DELIVER ASSETS`
+      : 'DELIVER ASSETS — Comercio, delivery y paquetería';
+    const description = product
+      ? product.summary
+      : 'Conoce las aplicaciones de DELIVER ASSETS para personas, comercios, operadores y equipos autorizados.';
+
+    document.title = title;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+  }, [product]);
 }
 
 function BrandMark() {
@@ -219,11 +273,12 @@ function BrandMark() {
   );
 }
 
-function AvailabilityNotice() {
+function LaunchNotice() {
   return (
-    <aside className="prototype-notice" aria-label="Estado de disponibilidad">
-      <strong>Desarrollo temprano</strong>
-      <span>Las aplicaciones y descargas mostradas todavía no están disponibles.</span>
+    <aside className="launch-notice" aria-label="Disponibilidad de aplicaciones">
+      <strong>Próximamente</strong>
+      <span>Las aplicaciones se publicarán por etapas en canales oficiales.</span>
+      <a href="./#applications">Conocer plataformas</a>
     </aside>
   );
 }
@@ -236,23 +291,30 @@ function SiteHeader() {
         <a href="./#applications">Aplicaciones</a>
         <a href="./#architecture">Cómo funciona</a>
         <a href="./#technology">Tecnología</a>
-        <a href="./#security">Seguridad</a>
+        <a href="./#security">Confianza</a>
         <a href="./#company">Empresa</a>
       </nav>
-      <a className="button button--primary button--header" href="./#applications">Ver descargas</a>
+      <a className="button button--primary button--header" href="./#applications">Conocer aplicaciones</a>
     </header>
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, index }: { product: Product; index: number }) {
   return (
-    <article className={`product-card product-card--${product.id}`}>
-      <p className="eyebrow">{product.label}</p>
+    <article
+      className={`product-card product-card--${product.id}`}
+      data-reveal="up"
+      style={{ '--reveal-delay': `${index * 70}ms` } as React.CSSProperties}
+    >
+      <div className="product-card__topline">
+        <p className="eyebrow">{product.label}</p>
+        <span className="availability-badge">{product.releaseLabel}</span>
+      </div>
       <h3>{product.name}</h3>
       <p>{product.summary}</p>
       <div className="product-card__meta">
-        <span>{product.platforms.length} plataformas previstas</span>
-        <span>No disponible todavía</span>
+        <span>{product.platforms.length} plataformas</span>
+        <span>{product.audience}</span>
       </div>
       <a className="text-link" href={`?app=${product.id}`}>Conocer la aplicación <span aria-hidden="true">→</span></a>
     </article>
@@ -263,98 +325,107 @@ function HomePage() {
   return (
     <main>
       <section className="hero">
-        <div className="hero__content">
+        <div className="hero__content hero-entrance">
           <p className="eyebrow">COMERCIO · DELIVERY · PAQUETERÍA</p>
-          <h1>Una red.<span>Cuatro aplicaciones.</span></h1>
+          <h1>Mover la ciudad.<span>Una red visible.</span></h1>
           <p className="hero__lead">
-            DELIVER ASSETS presenta y distribuye un ecosistema de aplicaciones separadas para clientes, comercios, riders y operación autorizada.
+            DELIVER ASSETS conecta personas, comercios y operadores mediante aplicaciones especializadas que comparten una misma operación.
           </p>
           <div className="hero__actions">
-            <a className="button button--primary" href="#applications">Explorar aplicaciones</a>
-            <a className="button button--secondary" href="#architecture">Entender la arquitectura</a>
+            <a className="button button--primary" href="#applications">Conocer aplicaciones</a>
+            <a className="button button--secondary" href="#architecture">Cómo funciona</a>
           </div>
-          <p className="hero__status">Este sitio no procesa pedidos. La operación ocurrirá dentro de las aplicaciones.</p>
+          <p className="hero__status">Aplicaciones móviles y de escritorio en preparación. Publicación progresiva por plataforma.</p>
         </div>
 
-        <div className="app-orbit" aria-label="Ecosistema de aplicaciones DELIVER ASSETS">
-          <div className="app-orbit__core"><span>DA</span><small>CORE</small></div>
-          <a className="app-orbit__node app-orbit__node--customer" href="?app=customer">Customer</a>
-          <a className="app-orbit__node app-orbit__node--business" href="?app=business">Business</a>
-          <a className="app-orbit__node app-orbit__node--rider" href="?app=rider">Rider</a>
-          <a className="app-orbit__node app-orbit__node--control" href="?app=control">Control</a>
+        <div className="app-orbit hero-entrance hero-entrance--visual" aria-label="Ecosistema de aplicaciones DELIVER ASSETS">
+          <div className="app-orbit__track app-orbit__track--outer" aria-hidden="true" />
+          <div className="app-orbit__track app-orbit__track--inner" aria-hidden="true" />
+          <div className="app-orbit__core"><strong>DELIVER</strong><small>CORE</small></div>
+          <a className="app-orbit__node app-orbit__node--customer" href="?app=customer"><small>PERSONAS</small>Customer</a>
+          <a className="app-orbit__node app-orbit__node--business" href="?app=business"><small>COMERCIOS</small>Business</a>
+          <a className="app-orbit__node app-orbit__node--rider" href="?app=rider"><small>CAMPO</small>Rider</a>
+          <a className="app-orbit__node app-orbit__node--control" href="?app=control"><small>OPERACIÓN</small>Control</a>
         </div>
       </section>
 
-      <section className="principle-strip" aria-label="Separación de responsabilidades">
-        <span><strong>Web</strong> presenta y distribuye</span>
-        <span><strong>Apps</strong> permiten operar</span>
-        <span><strong>Core</strong> sincronizará y gobernará</span>
+      <section className="principle-strip" aria-label="Separación de responsabilidades" data-reveal="up">
+        <span><strong>Descubre</strong> el ecosistema en la web</span>
+        <span><strong>Opera</strong> desde la aplicación adecuada</span>
+        <span><strong>Conserva</strong> una experiencia conectada</span>
       </section>
 
       <section className="section-block" id="applications">
-        <div className="section-heading">
+        <div className="section-heading" data-reveal="up">
           <p className="eyebrow">APLICACIONES</p>
-          <h2>Elige la herramienta correspondiente a tu función.</h2>
-          <p>Cada aplicación tendrá distribución, permisos y experiencia propios. Ninguna descarga está habilitada todavía.</p>
+          <h2>Una experiencia diseñada para cada responsabilidad.</h2>
+          <p>Customer, Business, Rider y Control separan funciones, permisos y dispositivos sin fragmentar la operación.</p>
         </div>
         <div className="product-grid">
-          {productIds.map((id) => <ProductCard key={id} product={products[id]} />)}
+          {productIds.map((id, index) => <ProductCard key={id} product={products[id]} index={index} />)}
         </div>
       </section>
 
       <section className="architecture-section" id="architecture">
-        <div className="section-heading section-heading--light">
-          <p className="eyebrow eyebrow--light">ARQUITECTURA PÚBLICA</p>
-          <h2>La página explica. Las aplicaciones ejecutan.</h2>
+        <div className="section-heading section-heading--light" data-reveal="left">
+          <p className="eyebrow eyebrow--light">CÓMO FUNCIONA</p>
+          <h2>Encuentra la aplicación correcta y continúa desde ahí.</h2>
+          <p>La web orienta. Cada aplicación ofrece las herramientas y permisos correspondientes a su función.</p>
         </div>
         <ol className="architecture-steps">
-          <li><span>01</span><div><strong>Descubre</strong><p>Conoce el servicio, requisitos y aplicación adecuada desde el sitio corporativo.</p></div></li>
-          <li><span>02</span><div><strong>Instala</strong><p>Descarga desde un canal oficial cuando exista una versión publicada.</p></div></li>
-          <li><span>03</span><div><strong>Opera</strong><p>Compra, vende, transporta o supervisa únicamente dentro de la aplicación autorizada.</p></div></li>
-          <li><span>04</span><div><strong>Sincroniza</strong><p>El futuro backend central mantendrá identidad, estados, permisos y auditoría.</p></div></li>
+          <li data-reveal="up"><span>01</span><div><strong>Descubre</strong><p>Conoce cada solución, sus requisitos y las plataformas disponibles.</p></div></li>
+          <li data-reveal="up"><span>02</span><div><strong>Descarga</strong><p>Instala desde un canal oficial cuando la versión de tu plataforma esté publicada.</p></div></li>
+          <li data-reveal="up"><span>03</span><div><strong>Opera</strong><p>Compra, vende, transporta o supervisa desde la aplicación correspondiente.</p></div></li>
+          <li data-reveal="up"><span>04</span><div><strong>Continúa</strong><p>Mantén cuenta, estados y contexto entre las superficies autorizadas.</p></div></li>
         </ol>
       </section>
 
       <section className="section-block" id="technology">
-        <div className="section-heading">
+        <div className="section-heading" data-reveal="up">
           <p className="eyebrow">TECNOLOGÍA</p>
-          <h2>Distribución separada, contratos compartidos.</h2>
-          <p>La velocidad no vendrá de mezclar todas las superficies, sino de compartir diseño, contratos y automatización sin confundir responsabilidades.</p>
+          <h2>Especializada por dispositivo. Conectada por diseño.</h2>
+          <p>Cada superficie responde a su contexto sin sacrificar identidad, continuidad ni claridad operacional.</p>
         </div>
         <div className="feature-grid">
-          <article><span>01</span><h3>Móvil especializado</h3><p>Customer y Rider priorizarán Android e iOS según las necesidades del dispositivo.</p></article>
-          <article><span>02</span><h3>Escritorio real</h3><p>Customer y Business tendrán clientes para Windows, macOS y Linux cuando el producto lo justifique.</p></article>
-          <article><span>03</span><h3>Núcleo autoritativo</h3><p>Identidad, pedidos, pagos, tracking y auditoría dependerán de un backend central todavía no implementado.</p></article>
+          <article data-reveal="up"><span>01</span><h3>Una cuenta</h3><p>Una identidad coherente para conservar historial, preferencias y acceso entre dispositivos compatibles.</p></article>
+          <article data-reveal="up"><span>02</span><h3>Cada dispositivo</h3><p>Móvil para operar en movimiento. Escritorio para administrar con más espacio, contexto y precisión.</p></article>
+          <article data-reveal="up"><span>03</span><h3>Estados visibles</h3><p>Permisos, transiciones y evidencias diseñados para que cada persona comprenda la siguiente acción.</p></article>
         </div>
       </section>
 
       <section className="security-section" id="security">
-        <div>
-          <p className="eyebrow">SEGURIDAD Y CONFIANZA</p>
-          <h2>No publicaremos funciones críticas como si ya existieran.</h2>
+        <div data-reveal="left">
+          <p className="eyebrow">CONFIANZA</p>
+          <h2>La operación correcta empieza por límites claros.</h2>
         </div>
         <div className="security-list">
-          <p><strong>Sin descargas ficticias.</strong> Los botones permanecerán inactivos hasta disponer de binarios firmados y canales oficiales.</p>
-          <p><strong>Sin acceso administrativo público.</strong> Control requerirá identidad, rol y dispositivo autorizados.</p>
-          <p><strong>Sin datos reales en este sitio.</strong> La web pública no solicita pagos, ubicación ni información operacional.</p>
+          <p data-reveal="up"><strong>Acceso por función.</strong> Cada aplicación expone únicamente las capacidades correspondientes a su usuario.</p>
+          <p data-reveal="up"><strong>Datos necesarios.</strong> Ubicación, pagos y evidencias se solicitarán solo dentro del flujo y la aplicación adecuados.</p>
+          <p data-reveal="up"><strong>Trazabilidad.</strong> Los cambios críticos conservarán contexto, responsabilidad y evidencia verificable.</p>
         </div>
       </section>
 
       <section className="company-section" id="company">
-        <p className="eyebrow eyebrow--light">DELIVER ASSETS</p>
-        <h2>Infraestructura digital para coordinar comercio y movimiento.</h2>
-        <p>Este repositorio publica una representación verificable de la arquitectura pública. No representa una operación comercial activa.</p>
-        <a className="button button--light" href="#applications">Ver aplicaciones previstas</a>
+        <div data-reveal="up">
+          <p className="eyebrow eyebrow--light">DELIVER ASSETS</p>
+          <h2>Infraestructura digital para coordinar comercio y movimiento.</h2>
+          <p>Una red de aplicaciones enfocadas que conecta personas, comercios, operadores y equipos autorizados.</p>
+          <a className="button button--light" href="#applications">Explorar el ecosistema</a>
+        </div>
       </section>
     </main>
   );
 }
 
-function PlatformCard({ platform }: { platform: Platform }) {
+function PlatformCard({ platform, index }: { platform: Platform; index: number }) {
   return (
-    <article className="platform-card">
+    <article
+      className="platform-card"
+      data-reveal="up"
+      style={{ '--reveal-delay': `${index * 55}ms` } as React.CSSProperties}
+    >
       <div><h3>{platform.name}</h3><p>{platform.use}</p></div>
-      <button type="button" disabled>{platform.availability}</button>
+      <span className="availability-badge">{platform.availability}</span>
     </article>
   );
 }
@@ -363,86 +434,91 @@ function ProductPage({ product }: { product: Product }) {
   return (
     <main className={`product-page product-page--${product.id}`}>
       <section className="product-hero">
-        <div>
+        <div className="hero-entrance">
           <a className="back-link" href="./#applications">← Todas las aplicaciones</a>
-          <p className="eyebrow">{product.label}</p>
+          <div className="product-hero__topline">
+            <p className="eyebrow">{product.label}</p>
+            <span className="availability-badge">{product.releaseLabel}</span>
+          </div>
           <h1>{product.name}</h1>
           <h2>{product.headline}</h2>
           <p className="product-hero__lead">{product.summary}</p>
           <div className="hero__actions">
-            <a className="button button--primary" href="#platforms">Ver plataformas previstas</a>
-            <a className="button button--secondary" href="#how-it-works">Cómo funcionará</a>
+            <a className="button button--primary" href="#platforms">Ver plataformas</a>
+            <a className="button button--secondary" href="#how-it-works">Cómo funciona</a>
           </div>
-          <p className="availability-callout"><strong>No disponible todavía.</strong> {product.accessNote}</p>
+          <p className="availability-callout"><strong>{product.releaseLabel}.</strong> {product.accessNote}</p>
         </div>
-        <div className="device-preview" aria-label={`Vista conceptual de ${product.name}`}>
+        <div className="device-preview hero-entrance hero-entrance--visual" aria-label={`Vista conceptual de ${product.name}`}>
           <div className="device-preview__window">
             <span className="device-preview__label">{product.name}</span>
             <div className="device-preview__screen">
               <span>{product.label}</span>
               <strong>{product.headline}</strong>
-              <small>Vista conceptual · sin funciones operativas</small>
+              <small>Vista de producto</small>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="audience-band">
+      <section className="audience-band" data-reveal="up">
         <span>Diseñada para</span><strong>{product.audience}</strong>
       </section>
 
       <section className="section-block">
-        <div className="section-heading">
-          <p className="eyebrow">CAPACIDADES PREVISTAS</p>
-          <h2>Una aplicación enfocada, no una sección disfrazada de la web.</h2>
+        <div className="section-heading" data-reveal="up">
+          <p className="eyebrow">CAPACIDADES</p>
+          <h2>Todo lo necesario para cumplir una función con claridad.</h2>
         </div>
         <div className="capability-grid">
           {product.capabilities.map((capability, index) => (
-            <article key={capability}><span>{String(index + 1).padStart(2, '0')}</span><h3>{capability}</h3></article>
+            <article key={capability} data-reveal="up" style={{ '--reveal-delay': `${index * 45}ms` } as React.CSSProperties}>
+              <span>{String(index + 1).padStart(2, '0')}</span><h3>{capability}</h3>
+            </article>
           ))}
         </div>
       </section>
 
       <section className="steps-section" id="how-it-works">
-        <div className="section-heading section-heading--light">
-          <p className="eyebrow eyebrow--light">CÓMO FUNCIONARÁ</p>
-          <h2>Del acceso a una operación trazable.</h2>
+        <div className="section-heading section-heading--light" data-reveal="left">
+          <p className="eyebrow eyebrow--light">CÓMO FUNCIONA</p>
+          <h2>Una secuencia clara desde el acceso hasta el cierre.</h2>
         </div>
         <ol>
           {product.steps.map((step, index) => (
-            <li key={step.title}><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{step.title}</strong><p>{step.text}</p></div></li>
+            <li key={step.title} data-reveal="up"><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{step.title}</strong><p>{step.text}</p></div></li>
           ))}
         </ol>
       </section>
 
       <section className="section-block" id="platforms">
-        <div className="section-heading">
-          <p className="eyebrow">DISTRIBUCIÓN</p>
-          <h2>Plataformas previstas.</h2>
-          <p>Los controles están deshabilitados deliberadamente. Se activarán únicamente cuando existan aplicaciones verificadas y enlaces oficiales.</p>
+        <div className="section-heading" data-reveal="up">
+          <p className="eyebrow">PLATAFORMAS</p>
+          <h2>La experiencia adecuada para cada dispositivo.</h2>
+          <p>Los enlaces oficiales aparecerán aquí cuando cada versión esté publicada y verificada.</p>
         </div>
         <div className="platform-grid">
-          {product.platforms.map((platform) => <PlatformCard key={platform.name} platform={platform} />)}
+          {product.platforms.map((platform, index) => <PlatformCard key={platform.name} platform={platform} index={index} />)}
         </div>
       </section>
 
       <section className="faq-section">
-        <div className="section-heading">
-          <p className="eyebrow">PREGUNTAS CLAVE</p>
-          <h2>Estado y límites actuales.</h2>
+        <div className="section-heading" data-reveal="up">
+          <p className="eyebrow">PREGUNTAS FRECUENTES</p>
+          <h2>Disponibilidad, acceso y plataformas.</h2>
         </div>
         <div className="faq-list">
           {product.faqs.map((faq) => (
-            <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+            <details key={faq.question} data-reveal="up"><summary>{faq.question}</summary><p>{faq.answer}</p></details>
           ))}
         </div>
       </section>
 
       <section className="other-products">
-        <p className="eyebrow">OTRAS APLICACIONES</p>
+        <p className="eyebrow" data-reveal="up">OTRAS APLICACIONES</p>
         <div>
           {productIds.filter((id) => id !== product.id).map((id) => (
-            <a key={id} href={`?app=${id}`}><span>{products[id].label}</span><strong>{products[id].name}</strong></a>
+            <a key={id} href={`?app=${id}`} data-reveal="up"><span>{products[id].label}</span><strong>{products[id].name}</strong></a>
           ))}
         </div>
       </section>
@@ -453,18 +529,26 @@ function ProductPage({ product }: { product: Product }) {
 function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div><strong>DELIVER ASSETS</strong><p>Sitio corporativo y centro futuro de distribución de aplicaciones.</p></div>
-      <div><span>Prototipo público</span><span>Sin operación real</span><span>GitHub Pages</span></div>
+      <div className="site-footer__brand"><BrandMark /><p>Comercio, delivery y paquetería en una red de aplicaciones especializadas.</p></div>
+      <nav aria-label="Enlaces del pie de página">
+        <a href="./#applications">Aplicaciones</a>
+        <a href="./#technology">Tecnología</a>
+        <a href="./#security">Confianza</a>
+        <a href="./#company">Empresa</a>
+      </nav>
+      <div className="site-footer__status"><span>Aplicaciones en preparación</span><span>Distribución oficial por etapas</span></div>
     </footer>
   );
 }
 
 function App() {
   const selectedProduct = getSelectedProduct();
+  useRevealAnimations();
+  usePageMetadata(selectedProduct);
 
   return (
     <div className="site-shell">
-      <AvailabilityNotice />
+      <LaunchNotice />
       <SiteHeader />
       {selectedProduct ? <ProductPage product={selectedProduct} /> : <HomePage />}
       <SiteFooter />
