@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && npm run verify:site",
     "check": "tsc",
+    "verify:site": "node scripts/verify-public-site.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
