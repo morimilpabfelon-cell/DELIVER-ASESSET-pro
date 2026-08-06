@@ -103,6 +103,12 @@ browserVerifier = replaceRequired(
 );
 browserVerifier = replaceRequired(
   browserVerifier,
+  `  await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'false'");\n  assert((await evaluate(client, "document.activeElement?.classList.contains('mobile-nav-toggle')")) === true, 'El clic exterior no devuelve el foco al botón');`,
+  `  await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'false'");\n  await waitFor(client, "document.activeElement?.classList.contains('mobile-nav-toggle') === true");\n  assert((await evaluate(client, "document.activeElement?.classList.contains('mobile-nav-toggle')")) === true, 'El clic exterior no devuelve el foco al botón');`,
+  'espera de foco después del clic exterior',
+);
+browserVerifier = replaceRequired(
+  browserVerifier,
   `  await navigate(client, contactUrl, 1440, 900, false);\n  report.contactDesktop = await evaluate(client,`,
   `  await navigate(client, appsUrl, 1440, 900, false);\n  report.applicationCards = await evaluate(client, \`(() => Object.fromEntries(\n    ['customer', 'business', 'rider', 'control'].map((id) => {\n      const card = document.querySelector('.application-card--' + id);\n      const heading = card.querySelector('h3');\n      const body = card.querySelector('p:not(.eyebrow)');\n      return [id, {\n        background: getComputedStyle(card).backgroundColor,\n        heading: getComputedStyle(heading).color,\n        body: getComputedStyle(body).color,\n      }];\n    }),\n  ))()\`);\n  assert(report.applicationCards.customer.background === 'rgb(255, 255, 255)', 'Customer perdió su fondo blanco');\n  assert(report.applicationCards.business.background === 'rgb(255, 198, 47)', 'Business perdió su fondo amarillo');\n  assert(report.applicationCards.rider.background === 'rgb(255, 51, 40)', 'Rider perdió su fondo rojo');\n  assert(report.applicationCards.control.background === 'rgb(17, 17, 17)', 'Control perdió su fondo oscuro');\n  assert(report.applicationCards.rider.heading === 'rgb(255, 255, 255)' && report.applicationCards.rider.body === 'rgb(255, 255, 255)', 'Rider no conserva texto legible');\n  assert(report.applicationCards.control.heading === 'rgb(255, 255, 255)' && report.applicationCards.control.body === 'rgb(255, 255, 255)', 'Control no conserva texto legible');\n\n  await navigate(client, contactUrl, 1440, 900, false);\n  report.contactDesktop = await evaluate(client,`,
   'contraste de tarjetas de aplicaciones',
