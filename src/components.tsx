@@ -4,7 +4,14 @@ import { appRoute, products, siteHref, type AppId, type CorporateRoute } from '.
 export function BrandMark() {
   return (
     <span className="brand-mark" aria-label="DELIVER ASSETS">
-      <span className="brand-mark__symbol" aria-hidden="true" />
+      <img
+        className="brand-mark__symbol"
+        src={siteHref('/brand/deliver-assets-mark.png')}
+        width="96"
+        height="73"
+        alt=""
+        aria-hidden="true"
+      />
       <span className="brand-mark__wordmark"><strong>DELIVER</strong><span>ASSETS</span></span>
     </span>
   );
@@ -122,17 +129,27 @@ export function SiteLayout({
   );
 }
 
-export function NetworkScene() {
+export function EditorialNetwork() {
+  const steps = [
+    { id: 'customer', index: '01', role: 'Customer', action: 'Solicita' },
+    { id: 'business', index: '02', role: 'Business', action: 'Prepara' },
+    { id: 'rider', index: '03', role: 'Rider', action: 'Mueve' },
+    { id: 'control', index: '04', role: 'Control', action: 'Supervisa' },
+  ] as const;
+
   return (
-    <div className="network-scene" aria-label="Recorrido conceptual entre Customer, Business, Rider y Control">
-      <div className="network-scene__grid" aria-hidden="true" />
-      <div className="network-scene__route" aria-hidden="true"><span /></div>
-      <div className="network-scene__core"><strong>DELIVER</strong><small>CORE</small></div>
-      <a className="network-node network-node--customer" href={appRoute('customer')}><i /><span><strong>Customer</strong><small>Solicita</small></span></a>
-      <a className="network-node network-node--business" href={appRoute('business')}><i /><span><strong>Business</strong><small>Prepara</small></span></a>
-      <a className="network-node network-node--rider" href={appRoute('rider')}><i /><span><strong>Rider</strong><small>Mueve</small></span></a>
-      <a className="network-node network-node--control" href={appRoute('control')}><i /><span><strong>Control</strong><small>Supervisa</small></span></a>
-    </div>
+    <figure className="editorial-network hero-entrance hero-entrance--visual" aria-labelledby="editorial-network-caption">
+      <div className="editorial-network__art">
+        <img src={siteHref('/brand/city-network.svg')} alt="" aria-hidden="true" />
+      </div>
+      <figcaption className="editorial-network__legend" id="editorial-network-caption">
+        {steps.map((step) => (
+          <a key={step.id} href={appRoute(step.id)}>
+            <span>{step.index}</span><strong>{step.role}</strong><small>{step.action}</small>
+          </a>
+        ))}
+      </figcaption>
+    </figure>
   );
 }
 
