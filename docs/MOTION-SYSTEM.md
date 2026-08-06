@@ -36,3 +36,7 @@ El movimiento explica cómo Customer, Business, Rider y Control participan en un
 ## Veracidad
 
 Los estados visuales son conceptuales. No representan pedidos, comercios, ubicaciones ni operaciones reales.
+
+## Criterio de terminación
+
+El cambio solo se considera validado cuando el SHA final pasa CI, mutation testing y CodeQL, se despliega mediante el pipeline reproducible y la URL pública confirma ese mismo SHA en `release.json`.
