@@ -29,6 +29,7 @@ jobs:
       - name: Install and lock quality tooling
         run: |
           npm install --save-dev --save-exact \
+            typescript@6 \
             @eslint/js eslint typescript-eslint globals \
             eslint-plugin-react-hooks eslint-plugin-jsx-a11y \
             vitest @vitest/coverage-v8 \
