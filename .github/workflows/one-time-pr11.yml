@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   migrate:
-    if: github.head_ref == 'chore/engineering-quality-baseline'
+    if: github.head_ref == 'chore/engineering-quality-baseline' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -21,10 +21,11 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: chore/engineering-quality-baseline
-      - name: Capture migration files
+      - name: Capture migration and permanent workflows
         run: |
           mkdir -p /tmp/pr11-migration/.github/workflows /tmp/pr11-migration/scripts
           cp .github/workflows/one-time-pr11.yml /tmp/pr11-migration/.github/workflows/
+          cp .github/workflows/ci.yml .github/workflows/pages.yml .github/workflows/codeql.yml /tmp/pr11-migration/.github/workflows/
           cp scripts/apply-pr11.mjs scripts/fix-pr11-generator.mjs /tmp/pr11-migration/scripts/
       - name: Setup Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
@@ -35,6 +36,49 @@ jobs:
         run: node scripts/fix-pr11-generator.mjs
       - name: Apply engineering baseline
         run: node scripts/apply-pr11.mjs
+      - name: Restore permanent workflows
+        run: |
+          cp /tmp/pr11-migration/.github/workflows/ci.yml .github/workflows/ci.yml
+          cp /tmp/pr11-migration/.github/workflows/pages.yml .github/workflows/pages.yml
+          cp /tmp/pr11-migration/.github/workflows/codeql.yml .github/workflows/codeql.yml
+      - name: Enforce repository hygiene
+        run: |
+          cat > .gitignore <<'EOF'
+          node_modules/
+          dist/
+          coverage/
+          reports/
+          .stryker-tmp/
+          *.log
+          .env
+          .env.*
+          !.env.example
+          .DS_Store
+          EOF
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+
+          const path = 'scripts/verify-quality-baseline.mjs';
+          let source = await readFile(path, 'utf8');
+          source = source.replace(
+            "import { access, readFile, readdir } from 'node:fs/promises';",
+            "import { execFileSync } from 'node:child_process';\nimport { access, readFile, readdir } from 'node:fs/promises';",
+          );
+          const marker = 'const files = await collect(dist);';
+          const hygiene = [
+            "const gitignore = await readFile(join(root, '.gitignore'), 'utf8');",
+            "const ignoredEntries = new Set(gitignore.split(/\\r?\\n/).map((entry) => entry.trim()).filter(Boolean));",
+            "for (const entry of ['node_modules/', 'dist/', 'coverage/', 'reports/', '.stryker-tmp/']) if (!ignoredEntries.has(entry)) errors.push('Falta en .gitignore: ' + entry);",
+            "if (gitignore.includes('$' + '{gitignore.trim()}')) errors.push('.gitignore contiene una plantilla sin resolver');",
+            "const trackedNodeModules = execFileSync('git', ['ls-files', 'node_modules'], { cwd: root, encoding: 'utf8' }).trim();",
+            "if (trackedNodeModules) errors.push('node_modules contiene archivos versionados');",
+            "for (const temporary of ['scripts/apply-pr11.mjs', 'scripts/fix-pr11-generator.mjs', '.github/workflows/one-time-pr11.yml']) if (await exists(join(root, temporary))) errors.push('Archivo temporal presente: ' + temporary);",
+            '',
+          ].join('\n');
+          if (!source.includes(marker)) throw new Error('No se encontró el marcador de higiene');
+          source = source.replace(marker, hygiene + marker);
+          await writeFile(path, source, 'utf8');
+          NODE
       - name: Install and lock quality tooling
         run: |
           npm install --save-dev --save-exact \
@@ -57,6 +101,9 @@ jobs:
           test ! -e scripts/fix-pr11-generator.mjs
           test ! -e .github/workflows/one-time-pr11.yml
           test -f package-lock.json
+          grep -Fxq 'node_modules/' .gitignore
+          ! grep -Fq '${gitignore.trim()}' .gitignore
+          git check-ignore -q node_modules/example
           ! git grep -n "npm install" -- .github/workflows/ci.yml .github/workflows/pages.yml
       - name: Restore migration files for connector cleanup
         run: |
@@ -68,6 +115,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          if git diff --cached --name-only | grep -q '^node_modules/'; then
+            echo "node_modules entró al staging" >&2
+            exit 1
+          fi
+          if git diff --cached --name-only | grep -q '^.github/workflows/'; then
+            echo "Un workflow permanente cambió durante la migración" >&2
+            git diff --cached --name-only >&2
+            exit 1
+          fi
           git diff --cached --quiet && { echo "No hay cambios por publicar"; exit 1; }
           git commit -m "Chore: baseline de calidad y despliegue verificable"
           git push origin HEAD:chore/engineering-quality-baseline
