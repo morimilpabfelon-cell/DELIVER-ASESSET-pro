@@ -8,7 +8,7 @@ export default defineConfig({
     outputFile: 'reports/unit-junit.xml',
     coverage: {
       provider: 'v8',
-      include: ['src/routing.ts'],
+      include: ['src/routing.ts', 'src/motion.ts'],
       reporter: ['text', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
       thresholds: {
