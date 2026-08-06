@@ -110,7 +110,7 @@ const sourceCss = (
 ).join('\n');
 
 const declaredCssVariables = new Set(
-  [...sourceCss.matchAll(/--([a-z0-9-]+)\s*:/gi)].map((match) => match[1]),
+  [...sourceCss.matchAll(/(?:^|[;{])\s*--([a-z0-9-]+)\s*:/gim)].map((match) => match[1]),
 );
 const usedCssVariables = new Set(
   [...sourceCss.matchAll(/var\(\s*--([a-z0-9-]+)/gi)].map((match) => match[1]),
