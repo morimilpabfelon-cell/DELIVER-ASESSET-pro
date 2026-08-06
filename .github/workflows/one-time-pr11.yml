@@ -1,0 +1,54 @@
+name: One-time PR11 engineering baseline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.head_ref == 'chore/engineering-quality-baseline'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: chore/engineering-quality-baseline
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.23.1
+          package-manager-cache: false
+      - name: Apply engineering baseline
+        run: node scripts/apply-pr11.mjs
+      - name: Install and lock quality tooling
+        run: |
+          npm install --save-dev --save-exact \
+            @eslint/js eslint typescript-eslint globals \
+            eslint-plugin-react-hooks eslint-plugin-jsx-a11y \
+            vitest @vitest/coverage-v8 \
+            @stryker-mutator/core @stryker-mutator/vitest-runner
+          npm pkg set packageManager="npm@10.9.8"
+      - name: Run full quality baseline
+        env:
+          BUILD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          npm run quality
+          npm run test:mutation
+          npm run security:audit
+      - name: Verify final tree
+        run: |
+          test ! -e scripts/apply-pr11.mjs
+          test ! -e .github/workflows/one-time-pr11.yml
+          test -f package-lock.json
+          ! git grep -n "npm install" -- .github/workflows/ci.yml .github/workflows/pages.yml
+      - name: Commit final baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Chore: baseline de calidad y despliegue verificable"
+          git push origin HEAD:chore/engineering-quality-baseline
