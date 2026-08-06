@@ -68,6 +68,23 @@ if (await pathExists(ogPath)) {
 if (await pathExists(illustrationPath) && (await stat(illustrationPath)).size > 80_000) errors.push('Ilustración editorial superior a 80 KB');
 
 const sourceCss = await readFile(join(repositoryRoot, 'src', 'styles.css'), 'utf8');
+const sourceComponents = await readFile(join(repositoryRoot, 'src', 'components.tsx'), 'utf8');
+const navigationRequirements = [
+  'id="site-navigation"',
+  'aria-controls="site-navigation"',
+  'aria-expanded={mobileMenuOpen}',
+  "event.key === 'Escape'",
+  "event.key !== 'Tab'",
+  'mobile-nav-scrim',
+  'site-nav__contact',
+  "currentRoute?.id === 'contact' ? 'page'",
+  "document.documentElement.classList.add('mobile-nav-open')",
+];
+const missingNavigationRequirements = navigationRequirements.filter((requirement) => !sourceComponents.includes(requirement));
+if (missingNavigationRequirements.length > 0) errors.push(`Contrato de navegación móvil incompleto: ${missingNavigationRequirements.join(', ')}`);
+for (const obsoleteNavigationRule of ['overflow-x: auto', 'margin-inline: -18px']) {
+  if (sourceCss.includes(obsoleteNavigationRule)) errors.push(`Regla móvil obsoleta presente: ${obsoleteNavigationRule}`);
+}
 const declaredCssVariables = new Set([...sourceCss.matchAll(/(?:^|[;{])\s*--([a-z0-9-]+)\s*:/gim)].map((match) => match[1]));
 const usedCssVariables = new Set([...sourceCss.matchAll(/var\(\s*--([a-z0-9-]+)/gi)].map((match) => match[1]));
 const unusedCssVariables = [...declaredCssVariables].filter((variable) => !usedCssVariables.has(variable)).sort();
@@ -80,4 +97,4 @@ for (const requiredDocument of ['ARCHITECTURE.md', 'CORPORATE-SITE.md', 'DESIGN-
   if (!await pathExists(join(repositoryRoot, 'docs', requiredDocument))) errors.push(`Documento de gobierno ausente: docs/${requiredDocument}`);
 }
 if (errors.length > 0) throw new Error(errors.join('\n'));
-console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS y tres activos de marca.`);
+console.log(`Contrato verificado: ${routes.length} rutas, ${files.length} archivos, ${declaredCssVariables.size} variables CSS, tres activos de marca y navegación móvil accesible.`);
