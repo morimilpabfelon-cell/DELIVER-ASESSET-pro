@@ -60,6 +60,7 @@ El build ejecuta:
 6. Chrome headless para navegación móvil, foco y responsive.
 7. Carga real del logo y de la ilustración editorial mediante sus dimensiones naturales.
 8. Contraste y fondos canónicos de Customer, Business, Rider y Control.
+9. Ausencia del aro decorativo y del CSS residual que lo sostenía en el hero de Inicio.
 
 Las páginas utilizan `siteHref()` y los archivos de `public/` utilizan `assetHref()`. Un activo inexistente debe responder HTTP 404; no puede quedar oculto mediante una página HTML servida con estado 200.
 
