@@ -223,7 +223,6 @@ html.mobile-nav-open body { overflow: hidden; }
 .journey-section,
 .distribution-section { padding: clamp(76px, 9vw, 128px) clamp(20px, 6vw, 96px); color: white; background: var(--brand-primary); }
 .application-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.application-grid--light .application-card { background: var(--surface-warm); }
 .application-card {
   display: flex;
   min-height: 330px;

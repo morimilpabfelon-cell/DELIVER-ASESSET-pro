@@ -56,7 +56,11 @@ async function createStaticServer() {
       const safePath = normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
       let filePath = join(distDirectory, safePath || 'index.html');
       if (await pathExists(filePath) && (await stat(filePath)).isDirectory()) filePath = join(filePath, 'index.html');
-      if (!await pathExists(filePath)) filePath = join(distDirectory, '404.html');
+      if (!await pathExists(filePath)) {
+        response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        response.end('Not found');
+        return;
+      }
 
       const body = await readFile(filePath);
       response.writeHead(200, {
@@ -217,6 +221,7 @@ try {
   await client.send('Input.setIgnoreInputEvents', { ignore: false });
 
   const homeUrl = `${origin}${siteBase}`;
+  const appsUrl = `${origin}${siteBase}apps/`;
   const contactUrl = `${origin}${siteBase}contact/`;
   const report = {};
 
@@ -237,6 +242,24 @@ try {
   assert(report.mobileInitial.expanded === 'false', 'El menú inicia con aria-expanded incorrecto');
   assert(report.mobileInitial.navDisplay === 'none', 'El panel móvil inicia visible');
   assert(JSON.stringify(report.mobileInitial.labels) === JSON.stringify(['Empresa', 'Servicios', 'Aplicaciones', 'Seguridad', 'Noticias', 'Contacto']), 'El menú no contiene los seis destinos canónicos');
+
+  await waitFor(client, "[...document.images].every((image) => image.complete)");
+  report.publicAssets = await evaluate(client, `(() => {
+    const logo = document.querySelector('.site-header .brand-mark__symbol');
+    const hero = document.querySelector('.editorial-network__art img');
+    return {
+      logoSrc: logo?.getAttribute('src'),
+      logoWidth: logo?.naturalWidth ?? 0,
+      logoHeight: logo?.naturalHeight ?? 0,
+      heroSrc: hero?.getAttribute('src'),
+      heroWidth: hero?.naturalWidth ?? 0,
+      heroHeight: hero?.naturalHeight ?? 0,
+    };
+  })()`);
+  assert(report.publicAssets.logoWidth > 0 && report.publicAssets.logoHeight > 0, 'El logo público no carga');
+  assert(report.publicAssets.heroWidth > 0 && report.publicAssets.heroHeight > 0, 'La ilustración editorial no carga');
+  assert(!report.publicAssets.logoSrc.endsWith('/'), 'La URL del logo termina en slash');
+  assert(!report.publicAssets.heroSrc.endsWith('/'), 'La URL de la ilustración termina en slash');
 
   await evaluate(client, "document.querySelector('.mobile-nav-toggle').click()");
   await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'true'");
@@ -275,6 +298,7 @@ try {
   await waitFor(client, "!!document.querySelector('.mobile-nav-scrim')");
   await evaluate(client, "document.querySelector('.mobile-nav-scrim').click()");
   await waitFor(client, "document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'false'");
+  await waitFor(client, "document.activeElement?.classList.contains('mobile-nav-toggle') === true");
   assert((await evaluate(client, "document.activeElement?.classList.contains('mobile-nav-toggle')")) === true, 'El clic exterior no devuelve el foco al botón');
 
   await navigate(client, contactUrl, 390, 844, true);
@@ -288,6 +312,26 @@ try {
   assert(report.contactMobile.current === 'page', 'Contacto no está activo en el menú móvil');
   assert(report.contactMobile.display !== 'none', 'Contacto está oculto en el menú móvil');
   assert(report.contactMobile.desktopButton === 'none', 'El botón desktop no se oculta en móvil');
+
+  await navigate(client, appsUrl, 1440, 900, false);
+  report.applicationCards = await evaluate(client, `(() => Object.fromEntries(
+    ['customer', 'business', 'rider', 'control'].map((id) => {
+      const card = document.querySelector('.application-card--' + id);
+      const heading = card.querySelector('h3');
+      const body = card.querySelector('p:not(.eyebrow)');
+      return [id, {
+        background: getComputedStyle(card).backgroundColor,
+        heading: getComputedStyle(heading).color,
+        body: getComputedStyle(body).color,
+      }];
+    }),
+  ))()`);
+  assert(report.applicationCards.customer.background === 'rgb(255, 255, 255)', 'Customer perdió su fondo blanco');
+  assert(report.applicationCards.business.background === 'rgb(255, 198, 47)', 'Business perdió su fondo amarillo');
+  assert(report.applicationCards.rider.background === 'rgb(255, 51, 40)', 'Rider perdió su fondo rojo');
+  assert(report.applicationCards.control.background === 'rgb(17, 17, 17)', 'Control perdió su fondo oscuro');
+  assert(report.applicationCards.rider.heading === 'rgb(255, 255, 255)' && report.applicationCards.rider.body === 'rgb(255, 255, 255)', 'Rider no conserva texto legible');
+  assert(report.applicationCards.control.heading === 'rgb(255, 255, 255)' && report.applicationCards.control.body === 'rgb(255, 255, 255)', 'Control no conserva texto legible');
 
   await navigate(client, contactUrl, 1440, 900, false);
   report.contactDesktop = await evaluate(client, `(() => ({
@@ -315,7 +359,7 @@ try {
   assert(report.tablet.wrap === 'wrap', 'La navegación tablet no permite ajuste de línea');
 
   console.log(JSON.stringify(report, null, 2));
-  console.log('Navegación móvil verificada en Chrome: foco, teclado, cierre, estado activo y responsive.');
+  console.log('Web verificada en Chrome: activos públicos, contraste, foco, teclado, cierre, estado activo y responsive.');
 } finally {
   client?.close();
   browser.kill('SIGTERM');
