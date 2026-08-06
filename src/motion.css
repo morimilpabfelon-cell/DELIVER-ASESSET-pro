@@ -67,6 +67,7 @@
   offset-rotate: auto 0deg;
   animation: operation-travel var(--motion-route) linear infinite;
   pointer-events: none;
+  will-change: offset-distance;
 }
 
 .editorial-network__art img {
@@ -77,6 +78,7 @@
   object-fit: cover;
   transform-origin: 50% 70%;
   animation: city-drift calc(var(--motion-route) * 1.35) var(--motion-ease-standard) infinite alternate;
+  will-change: transform;
 }
 
 .editorial-network__legend {
@@ -164,6 +166,7 @@
 .journey-grid li:focus-within::after { transform: none; }
 
 .application-card {
+  position: relative;
   isolation: isolate;
   overflow: hidden;
 }
@@ -281,10 +284,24 @@
   .editorial-network__art::after {
     width: 26px;
     height: 19px;
-    offset-path: path('M 30 326 C 88 286 102 156 196 140 S 300 258 410 86');
+    offset-path: path('M 24 326 C 70 286 92 156 168 140 S 246 258 320 86');
   }
   .product-visual { animation-duration: 7800ms; }
 }
+
+html[data-motion='static'] .hero__content > *,
+html[data-motion='static'] .editorial-network__art::before,
+html[data-motion='static'] .editorial-network__art::after,
+html[data-motion='static'] .editorial-network__art img,
+html[data-motion='static'] .journey-grid::before,
+html[data-motion='static'] .product-visual,
+html[data-motion='static'] .product-visual .tracking-line i,
+html[data-motion='static'] .product-visual .route-point,
+html[data-motion='static'] .product-visual .control-map span,
+html[data-motion='static'] .product-visual .route-path {
+  animation: none !important;
+}
+html[data-motion='static'] .editorial-network__art::after { offset-distance: 58%; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero__content > *,
