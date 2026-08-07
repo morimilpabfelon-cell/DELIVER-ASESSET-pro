@@ -183,8 +183,11 @@ for (const required of [
   'offset-distance',
   '--motion-route',
 ]) assert(sourceCss.includes(required), `Contrato CSS de movimiento incompleto: ${required}`);
-for (const required of ['getRevealDelay', 'resolveMotionMode', 'root.dataset.motion']) {
+for (const required of ["resolveMotionMode", "typeof window.IntersectionObserver === 'function'", 'root.dataset.motion']) {
   assert(sourceMain.includes(required), `Integración de movimiento incompleta: ${required}`);
+}
+for (const obsolete of ['getRevealDelay', 'clampRevealIndex', 'data-motion-group', '--reveal-delay']) {
+  assert(!sourceMain.includes(obsolete) && !sourceCss.includes(obsolete), `Abstracción de movimiento sin consumidor presente: ${obsolete}`);
 }
 assert(!sourceCss.includes('.hero::before'), 'El sistema de movimiento reintrodujo el aro del hero');
 
@@ -288,10 +291,34 @@ try {
   assert(report.reduced.imageAnimation === 'none', 'La ilustración sigue animada en modo reducido');
   assert(report.reduced.hiddenReveals === 0, 'El modo reducido oculta contenido');
 
+  const staticScript = await client.send('Page.addScriptToEvaluateOnNewDocument', {
+    source: "Object.defineProperty(window, 'IntersectionObserver', { configurable: true, value: undefined });",
+  });
+  await client.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await navigate(client, homeUrl, 390, 844, true);
+  report.static = await evaluate(client, `(() => {
+    const art = document.querySelector('.editorial-network__art');
+    return {
+      mode: document.documentElement.dataset.motion,
+      overflow: document.documentElement.scrollWidth > window.innerWidth,
+      packetAnimation: getComputedStyle(art, '::after').animationName,
+      scanAnimation: getComputedStyle(art, '::before').animationName,
+      imageAnimation: getComputedStyle(art.querySelector('img')).animationName,
+      hiddenReveals: [...document.querySelectorAll('[data-reveal]')].filter((element) => getComputedStyle(element).opacity === '0').length,
+    };
+  })()`);
+  assert(report.static.mode === 'static', 'La ausencia de IntersectionObserver no activa el modo static');
+  assert(!report.static.overflow, 'El modo static causa overflow horizontal');
+  assert(report.static.packetAnimation === 'none', 'El paquete sigue animado en modo static');
+  assert(report.static.scanAnimation === 'none', 'La capa urbana sigue animada en modo static');
+  assert(report.static.imageAnimation === 'none', 'La ilustración sigue animada en modo static');
+  assert(report.static.hiddenReveals === 0, 'El modo static oculta contenido');
+  if (staticScript.identifier) await client.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: staticScript.identifier });
+
   await mkdir(join(repositoryRoot, 'reports'), { recursive: true });
   await writeFile(join(repositoryRoot, 'reports', 'motion-browser.json'), `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
-  console.log('Render editorial verificado en Chrome: enhanced, journey, reduced motion y presupuestos.');
+  console.log('Render editorial verificado en Chrome: enhanced, journey, reduced, static y presupuestos.');
 } finally {
   client?.close();
   browser.kill('SIGTERM');
