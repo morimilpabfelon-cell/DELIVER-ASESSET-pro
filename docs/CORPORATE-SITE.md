@@ -105,10 +105,16 @@ No se activa un formulario hasta disponer de:
 
 ## Movimiento y accesibilidad
 
-- El movimiento comunica relación y continuidad, no decora.
-- Las animaciones continuas usan `transform` y `opacity`.
-- El contenido permanece visible sin animaciones.
-- `prefers-reduced-motion: reduce` elimina movimiento continuo y revelados.
+Este documento es la fuente canónica del movimiento del sitio; no se mantiene un contrato de movimiento paralelo.
+
+- El movimiento comunica relación, continuidad y cambio de responsabilidad; no es decoración necesaria para comprender o accionar el contenido.
+- `src/motion.ts` resuelve únicamente los modos `enhanced`, `reduced` y `static`; `src/main.tsx` mantiene un solo `IntersectionObserver` para los revelados por viewport.
+- `enhanced` habilita el movimiento editorial; `reduced` elimina el movimiento continuo; `static` conserva todo el contenido visible cuando `IntersectionObserver` no está disponible.
+- `transform` y `opacity` son las propiedades preferidas para movimiento continuo. `offset-distance` y `background-position` solo se permiten en capas editoriales acotadas, sin afectar layout, interacción ni comprensión, y deben quedar desactivadas en `reduced` y `static`.
+- No se usa `filter` animado de forma continua, WebGL, vídeo de fondo ni una librería externa de animación.
+- El CSS compilado no puede superar 60 KB por archivo y el JavaScript compilado no puede superar 280 KB por archivo. No se publican sourcemaps.
+- Chrome instrumentado debe comprobar `enhanced`, `reduced`, `static`, overflow horizontal, recorrido operativo y presupuestos de bundle.
+- La ausencia de comparación pixel a pixel se registra como deuda técnica; no se presenta una inspección estructural como equivalencia a QA visual.
 - Foco, contraste, lectura y navegación por teclado son gates obligatorios.
 
 ## Limpieza
@@ -124,7 +130,6 @@ Al reemplazar una arquitectura:
 3. eliminar documentos de etapa y código sin uso;
 4. añadir una verificación que impida la regresión.
 
-
 ## Navegación móvil y accesibilidad
 
 - En pantallas de hasta 820 px, la navegación se presenta como un panel controlado por un botón con `aria-controls` y `aria-expanded`.
@@ -134,7 +139,6 @@ Al reemplazar una arquitectura:
 - La página Contacto utiliza `aria-current="page"` tanto en el menú como en el acceso de escritorio.
 - El fondo no se desplaza mientras el menú permanece abierto.
 
-
 ## Activos públicos y contraste
 
 - Las rutas corporativas utilizan `siteHref()` y conservan slash final.
@@ -142,7 +146,6 @@ Al reemplazar una arquitectura:
 - El build debe abrir logo e ilustración en Chrome y comprobar dimensiones naturales mayores que cero.
 - Customer, Business, Rider y Control mantienen fondos blanco, amarillo, rojo y negro respectivamente.
 - Una variante de cuadrícula no puede anular el fondo de una aplicación sin actualizar también su contrato de contraste.
-
 
 ## Hero sin aro decorativo
 

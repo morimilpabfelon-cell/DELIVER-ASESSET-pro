@@ -18,36 +18,54 @@ import {
   siteHref,
   type CorporateRoute,
 } from './site';
+import { resolveMotionMode } from './motion';
 import './styles.css';
+import './motion.css';
 
 function useRevealAnimations() {
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const supportsObserver = typeof window.IntersectionObserver === 'function';
+    const root = document.documentElement;
 
-    document.documentElement.classList.add('motion-ready');
+    root.classList.add('motion-ready');
 
-    if (reduceMotion || !('IntersectionObserver' in window)) {
-      elements.forEach((element) => element.classList.add('is-visible'));
-      return () => document.documentElement.classList.remove('motion-ready');
-    }
+    const setMode = () => {
+      const mode = resolveMotionMode(preference.matches, supportsObserver);
+      root.dataset.motion = mode;
+      return mode;
+    };
+    const revealAll = () => elements.forEach((element) => element.classList.add('is-visible'));
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
-    );
+    const mode = setMode();
+    if (mode !== 'enhanced') revealAll();
 
-    elements.forEach((element) => observer.observe(element));
+    const observer = mode === 'enhanced'
+      ? new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-visible');
+            observer?.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      )
+      : null;
+
+    elements.forEach((element) => observer?.observe(element));
+
+    const handlePreferenceChange = () => {
+      if (setMode() !== 'enhanced') revealAll();
+    };
+    preference.addEventListener('change', handlePreferenceChange);
 
     return () => {
-      observer.disconnect();
-      document.documentElement.classList.remove('motion-ready');
+      observer?.disconnect();
+      preference.removeEventListener('change', handlePreferenceChange);
+      root.classList.remove('motion-ready');
+      delete root.dataset.motion;
     };
   }, []);
 }

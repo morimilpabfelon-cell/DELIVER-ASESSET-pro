@@ -1,5 +1,5 @@
 export default {
-  mutate: ['src/routing.ts'],
+  mutate: ['src/routing.ts', 'src/motion.ts'],
   testRunner: 'vitest',
   coverageAnalysis: 'perTest',
   reporters: ['clear-text', 'progress', 'html', 'json'],

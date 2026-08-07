@@ -96,7 +96,7 @@ const usedCssVariables = new Set([...sourceCss.matchAll(/var\(\s*--([a-z0-9-]+)/
 const unusedCssVariables = [...declaredCssVariables].filter((variable) => !usedCssVariables.has(variable)).sort();
 if (unusedCssVariables.length > 0) errors.push(`Variables CSS declaradas sin consumo: ${unusedCssVariables.map((variable) => `--${variable}`).join(', ')}`);
 
-for (const obsoletePath of ['docs/PRODUCT-STORYTELLING.md', 'src/brand-alignment.css']) {
+for (const obsoletePath of ['docs/PRODUCT-STORYTELLING.md', 'docs/CONTENT-AND-MOTION.md', 'docs/MOTION-SYSTEM.md', 'src/brand-alignment.css']) {
   if (await pathExists(join(repositoryRoot, obsoletePath))) errors.push(`Archivo obsoleto presente: ${obsoletePath}`);
 }
 for (const requiredDocument of ['ARCHITECTURE.md', 'CORPORATE-SITE.md', 'DESIGN-SYSTEM.md', 'BRAND-SOURCE.md', 'ROADMAP.md']) {

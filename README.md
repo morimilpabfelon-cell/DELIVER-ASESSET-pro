@@ -40,27 +40,27 @@ No se publican descargas, fechas, cobertura, métricas ni datos corporativos que
 ## Desarrollo local
 
 ```bash
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 npm run dev
 ```
 
 ## Verificación
 
 ```bash
-npm run build
+npm run quality
 ```
 
-El build ejecuta:
+El pipeline de calidad ejecuta:
 
-1. TypeScript.
-2. Vite.
-3. Generación de rutas estáticas.
-4. Generación de `404.html`, sitemap y robots.
-5. Contrato corporativo y control de código/documentación obsoletos.
-6. Chrome headless para navegación móvil, foco y responsive.
-7. Carga real del logo y de la ilustración editorial mediante sus dimensiones naturales.
-8. Contraste y fondos canónicos de Customer, Business, Rider y Control.
-9. Ausencia del aro decorativo y del CSS residual que lo sostenía en el hero de Inicio.
+1. validación de las 11 rutas canónicas;
+2. TypeScript y ESLint sin warnings;
+3. pruebas unitarias y cobertura con umbrales;
+4. build de Vite sin sourcemaps públicos;
+5. generación de `release.json`, rutas estáticas, `404.html`, sitemap y robots;
+6. contrato corporativo y control de código/documentación obsoletos;
+7. Chrome headless para navegación móvil, foco, responsive, activos y contraste;
+8. Chrome instrumentado para movimiento `enhanced`, `reduced` y `static`, recorrido operativo y presupuestos;
+9. mutation testing y auditoría de dependencias mediante los comandos dedicados.
 
 Las páginas utilizan `siteHref()` y los archivos de `public/` utilizan `assetHref()`. Un activo inexistente debe responder HTTP 404; no puede quedar oculto mediante una página HTML servida con estado 200.
 
@@ -75,7 +75,6 @@ Las páginas utilizan `siteHref()` y los archivos de `public/` utilizan `assetHr
 - [Guía de contribución](CONTRIBUTING.md)
 
 Todo cambio debe entrar mediante rama, pull request y evidencia verificable de compilación. Los documentos de etapas reemplazadas deben consolidarse o eliminarse para evitar fuentes de verdad paralelas.
-
 
 ## Calidad y publicación verificable
 
