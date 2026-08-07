@@ -21,4 +21,4 @@ Todo cambio se evalúa en estados separados: implementado, verificado, fusionado
 - Mutation score: 80% mínimo.
 - Vulnerabilidades de producción altas o críticas: cero.
 
-Los umbrales se aplican inicialmente al módulo puro de routing. La cobertura se ampliará por ratchet sin disminuir la línea base.
+Los umbrales se aplican a los módulos puros de routing y movimiento. La cobertura se ampliará por ratchet sin disminuir la línea base.
