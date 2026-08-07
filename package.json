@@ -21,7 +21,6 @@
     "verify:quality": "node scripts/verify-quality-baseline.mjs",
     "verify:browser": "node scripts/verify-mobile-navigation.mjs",
     "verify:motion": "node scripts/verify-motion-system.mjs",
-    "verify:mobile-nav": "npm run verify:browser",
     "build:site": "vite build && npm run generate:release && npm run generate:routes && npm run verify:site && npm run verify:quality && npm run verify:browser && npm run verify:motion",
     "build": "npm run validate:routes && npm run typecheck && npm run lint && npm run test:coverage && npm run build:site",
     "quality": "npm run build",
